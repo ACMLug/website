@@ -1,0 +1,492 @@
+<html>
+<title>dash16 adc device driver specs v0.1</title>
+<body bgcolor=ffffff text=000000>
+
+<font size=+1>
+dash16specs - specification of dash16 adc device driver v0.2
+</font>
+<br><hr><p>
+
+<a href="#intro">Introduction to system calls with the dash16</a><br>
+<ul><li><a href="#open">the <b>open</b> call</a><br>
+<li><a href="#write">the <b>write</b> call</a><br>
+<li><a href="#read">the <b>read</b> call</a><br>
+<li><a href="#close">the <b>close</b> call</a><br>
+<li><a href="#ioctl">the <b>ioctl</b> call</a><br>
+</ul>
+
+<a href="#other">Other Pertinent #define's in dash16.h</a><br>
+<ul><li><a href="#crit">Defines for the control register of the
+        interval timer</a><br>
+<li><a href="#cmcr">Defines for control of the ad start pulse (main control 
+        register)</a><br>
+<li><a href="#cter">Defines for control of the 2 bit timer-enable register</a>
+    <br>
+
+</ul>
+
+<br>
+<a href="note">Things to note/Known problems</a><br>
+<br>
+
+<p><hr><p>
+<a name="intro">
+<b>Introduction to system calls with the dash16:</b><p>
+This document summarizes the usage of the dash16 device driver, and a
+brief overview of device handling in general.<p>
+
+Unix uses device drivers as low-level interfaces for controlling system
+hardware. Each device recognized by the system will have a driver which
+interfaces with it and controls basic operations- on a tape drive driver
+for instance, a specific call might rewind the tape.<p>
+
+The actual workings behind this interface are encapsulated inside the
+driver, allowing the use of a standardized set of system calls to handle
+virtually all device functions. These primary "system calls" are: open,
+read, write, close, and ioctl.<p>
+
+In a sense, a device driver's job is to allow the programmer to interface
+with hardware much as if he were interfacing with any other text file-
+such devices are said to be character devices. As a consequence, "file"
+and "device" are often used interchangably. In fact, the device is merely a 
+special type of file actually on the filesystem!<p>
+
+Each running program (process) has a number of file desriptors associated
+with it which are used to access open files or devices. This descriptor is
+a small integer value. By default, when a program opens it will have 3
+descriptors:<p>
+
+<pre>
+0	Standard input
+1	Standard output
+2	Standard error
+</pre>
+
+Other file descriptors are associated with files or devices by making open
+system calls. (open returns a file descriptor) Note, each descriptor is
+unique to the process- even if two processes reference the same
+device/file. Also, if two different process both write to a file, their
+data will not be interleaved, but one will overwrite the other. Each
+process independently maintains its notion of the file access offset. (how
+far it is into the file)<p>
+
+(Note is is possible to use FILE pointers instead of file descriptors to 
+provide bufferred access to the device file. But, as will be explained later, 
+the file descriptor is needed for a special type of system call - ioctls. If 
+you are insistant on using a FILE pointer, you can obtain one by calling 
+fdopen() on the file descriptor. Just don't use the file descriptor for anything
+but ioctls after that!)<p>
+
+What follows is a brief synopsis of each of the 5 "primary" system calls.<p>
+
+<a name="open">
+<b>open</b> - declared in fcntl.h<br>
+<hr><br>
+<b>NOTE</b>:<i> non-POSIX systems should also include sys/types.h and 
+sys/stat.h</i><p>
+
+<code>
+int open(const char *path, int oflags);<br>
+int open(const char *path, int oflags, mode_t mode);<br>
+</code>
+<p>
+
+If succesful, <b>open</b> returns a file descriptor which can later be used
+to access the file. The name of the file to be opened is passed as <b>path</b>
+and "oflags" allows the file to be opened in a specific way.<p>
+
+<b>oflags</b> is a bitwise OR of mandatory file access modes and othel
+optional modes. <b>open</b> MUST specify one of the following access modes:<p>
+
+<pre>
+O_RDONLY	Open for read-only
+O_WRONLY	Open for write-only
+O_RDWR		Open for reading and writing
+</pre>
+<p>
+Optional modes (which may be bitwise OR'd to the mandatory option)
+include:<p>
+
+
+<pre>
+O_APPEND	Place written data at the end of the file.
+O_TRUNC		Set the length of the file to zero (effectively discard
+		previous contents)
+O_CREAT		Creates the file, if necessary.
+O_EXCL		Used with O_CREAT  to ensure that the caller creates
+		the file- protecting against two processes creating
+		the same file at the same time.
+</pre>
+<p>
+<a name="write">
+<b>write</b> - declared in unistd.h
+<br><hr><p>
+<code>
+size_t write(int fildes, const void *buf, size_t nbytes);<p>
+</code>
+
+<b>write</b> arranges for the first <b>nbytes</b> from <b>buf</b> to be
+written to the file associated with the file descriptor <b>fildes</b>. It 
+returns the number of bytes that were actually written to the device 
+associated with <b>fildes</b>.<p>
+
+This returned value may be lower than <b>nbytes</b> if their has been a
+descriptor error, or if the device is particular about block sizes. The
+function will return a 0 if the end of the file has been reached, and a -1
+if their has been an error in the <b>write</b> call.<p>
+
+<a name="read">
+<b>read</b> - declared in unistd.h
+<br><hr><p>
+<code>
+size_t read(int fildes, void *buf, size_t nbytes);<p>
+</code>
+
+<b>read</b> reads <b>nbytes</b> of data from the file associated with
+<b>fildes</b> and places them in <b>buf</b>. Similar to <b>write</b>, it 
+returns the number of data bytes actually read- which also may be less than
+the number of bytes requested. <b>read</b> returns 0 if nothing is to be read
+(end of file), and a -1 if an error has occurred.<p>
+
+<a name="close">
+<b>close</b> - declared in unistd.h
+<br><hr><p>
+<code>
+int close(int fildes);<p>
+</code>
+
+<b>close</b> terminates descriptor association with a file/device and 
+<b>fildes</b>.  Henceforth, the file descriptor becomes available for reuse. 
+0 is returned if succesful, -1 on failure.<p>
+
+<a name="ioctl">
+<b>ioctl</b> - declared in unistd.h
+<br><hr><p>
+<code>
+int ioctl(int fildes, int cmd, ...);
+</code>
+
+<b>ioctl</b> provides a standardized (okay, maybe not...) interface for 
+controlling the behavior of devices which can't easily be handled by other
+available calls. This might include, opening a cd, rewinding a tape, or
+say, changing the frequency on a dash 16 adc/dac.<p>
+
+<b>ioctl</b> performs the function indicated by <b>cmd</b> on the device 
+referenced by the descriptor <b>fildes</b>. The <b>...</b> refers to an 
+<b>optional</b> parameter. Wether or not <b>...</b> is needed in the call is 
+dependent on <b>cmd</b> requiring an additional argument. This additional 
+argument can be an integer or a pointer.<p>
+
+More about ioctl soon- let's consider the specifics of the dash16 adc driver.<p>
+
+Since the dash16 driver provides an interface for accessing the hardware
+like a text file, (a character device) we can perform the simplest of tasks 
+without concerning ourself with ioctl calls.<p>
+
+First off, we might open the device by making a simple open call, as<p>
+<code>
+open("dash16", O_RDWR);<p>
+</code>
+Similarly, since the driver defaults to sampling at 20Khz on channel 0 we 
+could use<p>
+<code>
+read(filedes, buf, howmuch);<p>
+</code>
+(where filedes, buf and howmuch correspond to file descriptor, reading buffer
+and amount to read, respectively)<p>
+
+To do anything more interesting however, we will need to use a ioctl call
+to first configure the card for actual use. Recall that the ioctl function
+is called as<p>
+<code>
+int ioctl(int fildes, int cmd, ...);<p>
+</code>
+Since we've already considered the meaning of the file descriptor, and the
+method by which it may be assigned, let us now consider <b>cmd</b>.
+
+ioctl uses a set of predefined macro's (defined in dash16.h) which
+expand to macro's themselves, which in turn expand to 4bit bitfields specific
+to each ioctl function. These bitfields are called ioctl numbers- the 
+macros serve to both simplify the programmer's job and ensure the assigned
+number is valid. In actuality, these ioctl numbers are what it passed
+as the <b>cmd</b> to ioctl--fortunately, we need only concern ourselves with
+the macros responsible.<p>
+
+Let's first consider the macros which will expand to the usable ioctl 
+numbers. These macros are defined in asm/ioctl.h (which is included by
+linux/ioctl.h):<p>
+<pre>
+ _IO(type, nr)
+ _IOR(type, nr, size)
+ _IOW(type, nr, size)
+ _IOWR(type, nr, size)
+</pre><p>
+Each macro defines the direction of the transfer. (read, write, or read/write)
+<p>
+<b>type</b> is simply a unique number, called a "magic" number which will be
+unique to the device. Each running device (in kernel space) must have a 
+unique "magic" number- so the kernel may differentiate among ioctl numbers.
+<b>nr</b> is a number which will be unique to the ioctl number with respect to 
+the device driver. Each ioctl define will use a succesively greater <b>nr</b>
+value in dash16.h. Finally, size refers to the size of the data transfer
+involved. One should note however, that since sizeof() is part of the
+macro expansion, the programmer need only pass the data type- which
+will then be evaluated for it's size.<p>
+
+However, as mentioned previously, dash16.h also defines a set of macros 
+which themselves expand to the necessary _IO, _IOR, _IORW, or _IOW macros.
+Of course, this greatly simplifies the programmer's job. These macros
+are:<p>
+<pre>
+ #define DASH16_AD_TRIGGER       _IO(DASH16_IOC_NUM, 0)
+   Start analog-digital conversion. Note this is probably not advisable,
+   as data will probably be dropped between the ioctl and the read.
+
+ #define DASH16_CHANNELS_SELECT  _IOR(DASH16_IOC_NUM, 1, \
+         struct dash16_channel_range *)
+   Select channel start/end.
+
+ #define DASH16_CHANNELS_READ    _IOW(DASH16_IOC_NUM, 2, \
+         struct dash16_channel_range *)
+   Get channel start/end.
+
+ #define DASH16_READ_STATUS      _IOW(DASH16_IOC_NUM, 3, u8 *)
+   Read STATUS register.
+
+ #define DASH16_TIMER_ENABLE     _IOR(DASH16_IOC_NUM, 4, u8 *)
+   Controls the timer control register. Only the low 2 bits are used.
+
+ #define DASH16_TIMER_CTLW_RAW   _IOR(DASH16_IOC_NUM, 5, \
+         struct dash16_timer_regs *)
+   Timer control Write (raw access to registers)
+
+ #define DASH16_TIMER_CTLR_RAW   _IOWR(DASH16_IOC_NUM, 6, \
+         struct dash16_timer_regs *)
+   Timer control Read (raw access to registers) 
+
+ #define DASH16_SET_FREQ         _IOR(DASH16_IOC_NUM, 6, int *)
+   Set the frequency on the clock. This is in hertz.
+
+ #define DASH16_RESTORE_DFL      _IO(DASH16_IOC_NUM, 7)
+   Restore default settings. ie: sample on channel 0 at 20Khz.  
+
+ #define DASH16_AD_START_CTL  _IOR(DASH16_IOC_NUM, 8, int *)
+   Start conditions for analog/digital conversion.
+</pre><p>
+ In each define, pay special attention to the <b>type</b> parameter passed
+ to the _IO macro. The dash16 driver uses pointers as a matter of
+ form. Notable data types are u8 (typedef'd in sys/types.h), 
+ struct dash16_timer_regs, and struct dash16_channel_range.<p>
+<pre>
+ dash16_timer_regs and dash16_channel_range are implemented as
+ 
+  struct dash16_timer_regs {
+    u16 ctr[3];
+    u8 timer_ctl;
+  };
+
+  struct dash16_channel_range {
+    u8 start;   /* Start channel for conversion */
+    u8 end;   /* End channel for conversion */
+  };
+</pre>
+ For instance, to set the channels start and end to 1 and 2 respectively, 
+ we might<p>
+<pre>
+ struct dash16_channel_range channel; /* initialize channel structure 
+ channel.start=1;                      * for passing channel information
+ channel.end=2;                        * with DASH16_CHANNELS_READ */
+ ioctl(filedes, DASH16_CHANNELS_READ, &channels);
+</pre><p>
+
+<a name="other"> 
+<font size=+1>Other Pertinent #define's in dash16.h</font>
+<br><hr><p> 
+It is unfortunate that this card has multiple registers with very simmilar
+names, all for controlling things related to the interval timer. This
+caused the authors much grief in trying to decide what to call various 
+defines and ioctls (and how to implement them!) Lets go over a few of these 
+now.<p>
+
+<a name="crit">
+<b>Defines for the control register of the interval timer:</b><br>
+(ioctls: DASH16_TIMER_CTL(R/W)_RAW)<p>
+
+To simplify the configuration of the control register for the interval timer,
+the following macros are defined in dash16.h - when collectively OR'd together
+they serve to produce a configuration byte which can then be written to 
+the correct register. The user utilizes these macros via the dash16_timer_regs
+structure and the DASH16_TIMER_CTL(R/W)_RAW ioctls.<p>
+<pre>
+ #define DASH16_TCTL_SELECT(x)   (((x) & 3) << 6)
+  This selects a counter clock. This simply takes a counter clock (int)
+  as it's argument.
+
+ #define DASH16_TCTL_RL(x)       (((x) & 3) << 4)
+  This is OR'd together with DASH16_TCTL_SELECT to help produce the byte 
+  which is to be written. Unlike DASH16_TCTL_SELECT, DASH16_TCTL_RL(x)
+  takes 1 or 2 macros itself. They are:
+
+   #define DASH16_RL_MSB           (1)
+    This tells DASH16_TCTL_RL(x) to read/load the least significant bit.
+   #define DASH16_RL_LSB           (1<<1)
+    Similarly, this indicates the GSB is to be read/loaded.
+
+   <b>NOTE</b>: Both MSB and LSB may be read/load by OR'ing these together. 
+
+ #define DASH16_TCTL_MODE(x)     (((x) & 7) << 1)
+  This is used to select the actual configuration of the dash16. As you
+  might guess, a set of macros is available to pass to DASH16_TCTL_MODE(x),
+  they are:
+
+   #define DASH16_PTERM            0 
+    Pulse on terminal count
+   #define DASH16_PROG_SHOT        1 
+    Programmable one shot
+   #define DASH16_RATE_GEN         2 
+    Rate Generator
+   #define DASH16_SQ_WAVE          3 
+    Square wave generator
+   #define DASH16_SOFT_STRB        4 
+    Software tiggered strobe
+   #define DASH16_HARD_STRB        5 
+    Hardware triggered strobe
+  
+   <b>NOTE</b>: Since these define the configuration of the card, DON'T 
+         try OR'ing them together.
+
+ #define DASH16_TCTL_BCD_MODE(x) ((x) & 3)
+  This specifies the format for the timer counter inputs, either binary,
+  or binary coded decimal. (wherein each decimal place is represented in
+  a 4 bit segment *gag*) DASH16_TCTL_BCD_MODE(x) takes ONE of the following
+  macros to specity the use.
+
+   #define DASH16_USE_BCD          1
+    Specifying binary coded decimal.   
+   #define DASH16_USE_BIN          0
+    Specifying the good &lt;cough&gt;, I mean binary format.
+
+ Each of these 3 main defines [DASH16_TCTL_RL(x), DASH16_TCTL_MODE(x), and
+ DASH16_TCTL_BCD_MODE(x)] are OR'd together to specify a byte to be 
+ written to a register port. Where as the DOS user would want to use these
+ defines as follows:
+
+  outp(BASE_ADDR + 0x0f, DASH16_TCTL_SELECT(1) | 
+	DASH16_TCTL_RL(DASH16_RL_LSB|DASH16_RL_MSB) |
+	DASH16_TCTL_MODE(DASH16_RATE_GEN) | 
+	DASH16_TCTL_BCD_MODE(DASH16_USE_BIN));
+
+  outp(BASE_ADDR + 0x0d, 2);
+
+</pre>
+
+ This writes the byte configured by the rather menacing OR conglomeration
+ (Select counter 1 to work on, work on both the low and high bytes, use rate 
+ generation, and use plain binary notation) to the status register, then
+ 2 to the conrol register selected (register 1).<p>
+
+ Note that of course, you as a (Linux) user cannot use outp, or even direct 
+ hardware access. In this example, you would have to do something like:<p>
+
+<pre>
+ control.timer_ctl = (DASH16_TCTL_SELECT(1) | 
+	DASH16_TCTL_RL(DASH16_RL_LSB|DASH16_RL_MSB) | 
+	DASH16_TCTL_MODE(DASH16_RATE_GEN) | 
+	DASH16_TCTL_BCD_MODE(DASH16_USE_BIN);
+
+ control.ctr[1] = 2;
+</pre><p>
+
+ Then when you finish with the rest of that control structure, you send
+ it off via: ioctl(filedes, DASH16_TIMER_CTLR_RAW, &control);<p>
+
+ Note that while in CTLW ioctl, you only operate on one register at a time, 
+ while a read in CTLR will latch and read all 3 timer registers.<p>
+
+ If you want to reset a counter to it's default state (that is done by a select
+ and no write), then you simply set all 3 registers to -1 on write mode.<p>
+ 
+ As Mike Perry says in dash16.h:<p>
+<blockquote><i>
+  "All of these macros must be ored together to build info to send to the 
+  timer control register. This is basically for refrence. If you are cool 
+  enough to have memorized the exact hex values that do various timer ops, 
+  then go ahead and use them."
+</i></blockquote>
+<p>
+
+<a name="cmcr">
+<b>Defines for control of the ad start pulse (main control register):</b><br>
+(ioctl: DASH16_AD_START_CTL)<p>
+These defines control where the start pulses for an adc come from:<p>
+<pre>
+#define DASH16_ENABLE_SOFTWARE   (1)    /* Allow software only to start A/D */
+#define DASH16_ENABLE_TRIGGER    (1<<1) /* Allow trigger pin to start A/D */
+#define DASH16_ENABLE_TIMER     (1<<1 | 1) /* Allow timer to start A/D */
+</pre><p>
+  For example, DOS users probably write something to the effect of:
+<code>
+    outp(DASH16_BASE + 9, 0xa7);<p>
+</code>
+
+  To set the control register to use irq2, dma, and timer output controlled
+  starts.<p>
+
+  You as a Linux user would use:<p>
+<pre>
+  u8 control = DASH16_ENABLE_TIMER;
+
+  ioctl(filedes, DASH16_AD_START_CTL, &control);
+</pre><p>
+  And the driver itself will handle irq and dma negotiation.
+<p>
+
+<a name="cter">
+<b>Defines for control of the 2 bit timer-enable register:</b><br>
+(ioctl:  DASH16_TIMER_ENABLE)<p>
+These defines control when to actually START the internal clocks<p>
+
+<pre>
+  #define DASH16_TIMER_TRIG_CONTROL       1
+    This mandates that TRIG0 on the card's data port be high before starting
+    clocks. This is the default for the card (a carry-over from the 20Khz
+    base sample frequency)
+
+  #define DASH16_TIMER_USE_XTAL_CLK       (1<<1)
+    By calling this define, the internal stable 100Mhz xtal clock will
+    be used instead of the external COUNTER 0.
+</pre><p>
+
+Your typical DOS user probably wants to do something like:<p>
+<code>
+outp(DASH16_BASE + 0x0a, 1);<p>
+</code>
+
+  This can be accomplished in Linux userland with:<p>
+
+<pre>
+  u8 timer_enable = DASH16_TIMER_TRIG_CONTROL;
+
+  ioctl(filedes, DASH16_TIMER_ENABLE, &timer_enable);
+</pre>
+
+<p><hr><p>
+<a name="note">
+<b>Things to note/Known problems</b><p>
+<p>
+The write function writes the correct amount of data, and far as I can
+tell, writes the data requested, but when I hooked up D/A Out 0 to an  
+oscilloscope I am not getting any output. Since I have no real application 
+for writing to the device, I'm not going to worry to much about it. See
+the dash16_write function in dash16.c if you want to fix it. 
+The source is really well commented, I made sure of that.
+
+-- Mike Perry
+<bt>
+
+<p><hr><p>
+<font size=-1>
+Thank you for your partonage:<br>
+The Linux User's Group DASH16 EOH Team.
+</font>
+</html>

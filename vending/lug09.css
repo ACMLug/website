@@ -1,0 +1,37 @@
+#navcontainer2 {
+	width: 100%;
+	float: left;
+	background-color: #6c8ce9;
+}
+
+#navcontainer2 ul { padding: 0; }
+#navcontainer2 ul li { display: inline; }
+
+#navcontainer2 ul {
+	margin: 0;
+	padding: 0 0 0 7%;
+	color: #FFFFFF;
+	font-size: .75em;
+	font-weight: bold;
+}
+
+#navcontainer2 ul li a {
+	padding: 0.2em 12px;
+	background-color: #7c9dfc;
+	color: #FFFFFF;
+	text-decoration: none;
+	float: left;
+	border-right: 1px solid #4775FF;
+}
+
+#navcontainer2 ul li a:hover {
+	background-color: #ADC2FF;
+	color: #FFFFFF;
+}
+
+#navcontainer2 ul li a#current {
+	color: #FFFFFF;
+	background: #4775FF;
+	text-align: left;
+}
+

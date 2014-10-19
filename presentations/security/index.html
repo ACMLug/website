@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>Security talk for LUG Installfest</title>
+</head>
+<body>
+<h1>Securing your Linux Installation</h1><br>
+<ul>
+<li>Securing your system:
+<ul>
+<li>tcp-wrappers
+<ul>
+<li>/etc/hosts.deny</li>
+<li>/etc/hosts.allow</li>
+<li>Format for entries: <code>daemon_list : client_list [ : shell_command ]</li>
+</ul></li>
+<li>services in /etc/inetd.conf
+<ul>
+<li>What you don't need:
+<ul>
+<li>Any of the rhost services (rsh, rlogin, rexec, etc).  If you want this functionality in a secure setting, use <a href="ftp://ftp.cs.hut.fi/pub/ssh/">ssh</a></li>
+<li>finger</li>
+<li>tftpd, bootps -- normally only used for net-booting other machines
+<li>For any service that you don't understand, it's safe to turn that service off 99% of the time (at the very least, turn it off long enough to learn what it is, and then decide whether to turn it back on or not)</li>
+</ul></li>
+<li>What you might want:
+<ul>
+<li>telnetd</li>
+<li>ftpd</li>
+<li>identd</li>
+</ul></li>
+</ul></li>
+<li>standalone services
+<ul>
+<li>These services are found in /etc/rc.d/init.d, and linked into the proper runlevels in /etc/rc.d</li>
+<li>If you don't need or want a service, remove the S* link to that service in the relevant runlevel.  For example, if there is a script /etc/rc.d/init.d/sendmail that starts sendmail, and  that script is linked into runlevel 3 as /etc/rc.d/rc3.d/S20sendmail, then to turn off sendmail, simply remove that link.</li>
+</ul></li>
+</ul></li>
+<li>To firewall or not to firewall</li>
+<li>Links:
+<ul>
+<li><a href="http://www.acm.uiuc.edu/workshops/security">ACM's Security Workshop</a></li>
+</ul></li>
+</ul>
+</body>
+</html>
+
+

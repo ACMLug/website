@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Shared Memory Under Linux: BSD mmap</TITLE>
+ <LINK HREF="shm-3.html" REL=next>
+ <LINK HREF="shm-1.html" REL=previous>
+ <LINK HREF="shm.html#toc2" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="shm-3.html">Next</A>
+<A HREF="shm-1.html">Previous</A>
+<A HREF="shm.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2. BSD mmap</A></H2>
+
+<H2><A NAME="ss2.1">2.1 Synopsis</A>
+</H2>
+
+<P> 
+<BLOCKQUOTE><CODE>
+<PRE>
+#include &lt;unistd.h>
+#include &lt;sys/mman.h>
+
+void  *mmap(void  *start,  size_t length, int prot , int
+              flags, int fd, off_t offset);
+
+int munmap(void *start, size_t length);
+
+int msync(const void *start, size_t length, int flags);
+
+int mprotect(const void *addr, size_t len, int prot);
+
+prot |=  PROT_EXEC
+         PROT_READ
+         PROT_WRITE
+         PROT_NONE
+
+flags |= MAP_FIXED
+         MAP_SHARED, MAP_PRIVATE
+         MAP_ANONYMOUS
+
+            
+</PRE>
+</CODE></BLOCKQUOTE>
+<P>
+<H2><A NAME="ss2.2">2.2 Overview</A>
+</H2>
+
+<H3>Mapping Files</H3>
+
+<P>When you request a shared segment under the BSD implementation,
+what you are really doing is requesting that a file (actually, a
+file descriptor 'fd', which was already opened by <CODE>open(2)</CODE>) of length
+'length' be mapped into the address pointed to by 'start' of your 
+proceess space starting 'offset' bytes into the file. If start is
+NULL, the address is determined by the kernel. NOTE: You MUST know
+the length of the file being mapped (see <CODE>fstat(2)</CODE>), and the length 
+of your segment WILL NOT CHANGE from this initial length. This means
+if write past the end of the segment, the file will not be appened
+to. You will get a segmentation fault instead. 
+<P>The kernel then instructs the MMU of the CPU to
+generate a "page fault" when a section of this region of memory 
+is accessed. When the kernel gets this page fault, it gets a page
+(4K) of data from the corresponding location in the file, and reads
+it into memory. The kernel only does this once per page of data in
+your mapped segment. This also means that no physical memory is
+allocated untill you start accessing the pages of the mapped region.
+<H3>Pemissions and access</H3>
+
+<P>The standard file modes are checked by the kernel to determine
+whether or not a process has access to map a file (shared or not).
+In addition, you may also specify permissions on the segment itself.
+These permissions describe to the kernel what may be done to the
+actual memory (Can it be executed? Can it be read? Written to?) The
+<CODE>mprotect</CODE> system call can be used to change permissions on 
+any section of previously mapped memory that starts on a page 
+boundry.
+<P>When an attempted mmap to a file fails, mmap returns -1 (not NULL!), 
+and errno is set. However, when you try to access a segment in a way
+that violates its permissions, a segmentation fault is generated. 
+<H3>Syncronization</H3>
+
+<P>When you write to a your shared segment, your changes do not appear
+immediately to the file until you perform an <CODE>msync(2)</CODE>. They 
+are, of course, visible to other processes who also are sharing your
+segment.
+<P>Additionaly, you may make the segment private, which means that if
+another process maps the file, it does not see changes to your 
+version of the mapped file, and vice versa. Another characteristic 
+that might be confused with a private mapping is an anonymous 
+mapping. Anonymous mappings are not associated with files at all, 
+and hence are not shared memory. We will use them to implement our 
+malloc debugger however. (Note anonymous mappings are not POSIX
+standard. However, most UNIX flavors do support it. Those that don't 
+usually allow multiple mappings to /dev/zero of any length.)
+<HR>
+<A HREF="shm-3.html">Next</A>
+<A HREF="shm-1.html">Previous</A>
+<A HREF="shm.html#toc2">Contents</A>
+</BODY>
+</HTML>

@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>uiuc.sw.linux FAQ: UIUC-Specific Information</TITLE>
+ <LINK HREF="uiuc.sw.linux-8.html" REL=next>
+ <LINK HREF="uiuc.sw.linux-6.html" REL=previous>
+ <LINK HREF="uiuc.sw.linux.html#toc7" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="uiuc.sw.linux-8.html">Next</A>
+<A HREF="uiuc.sw.linux-6.html">Previous</A>
+<A HREF="uiuc.sw.linux.html#toc7">Contents</A>
+<HR>
+<H2><A NAME="s7">7. UIUC-Specific Information</A></H2>
+
+<H2><A NAME="ss7.1">7.1 How do I run Mentor Graphics remotely?</A>
+</H2>
+
+<P>The primary problem in getting Mentor Graphics to work remotely seems to 
+be having the right fonts installed.  To get the right fonts, you must
+run the mgc_font_collect script on a machine that has Mentor Graphics
+installed, and then copy these fonts to your computer and add them to
+your X font database.
+<P>
+<H2><A NAME="ss7.2">7.2 How can I use my Linux machine as my primary e-mail machine?</A>
+</H2>
+
+<P>Surprisingly this is pretty straight-forward. In Redhat, there is almost no
+dreaded sendmail hackery to be done. First off, if you don't have a static IP,
+you're going to be SOL, and you're going to have to settle for using
+fetchmail or POP and changing your FROM address in your mail client. In which 
+case, refer to those questions in this FAQ.
+<P>If you do have a static IP address, and have a registered domain name (note,
+this is probably only possible if you live in private housing. In which case
+you can usually request a static IP), then all you have to do is edit
+/etc/sendmail.cw and on a line by itself, put in the domainname that points to
+your static IP address, then restart sendmail (something along the lines of
+/etc/rc.d/init.d/sendmail restart for System V style inits). 
+<P>
+<P>
+<H2><A NAME="ss7.3">7.3 How can I change my from header in e-mails?</A>
+</H2>
+
+<P>Cool mail clients first: in Mutt, simply add 
+<P>my_hdr From: someuser@somewhere.net (Some Name)
+<P>to .muttrc. In Pine, you can set the hostname of the from field but apparently
+not much else. Go to (S)etup, then (C)onfig, then edit the second field down. 
+In Netscape you may specify the whole email address under
+Edit->Prefrences->Identity.
+<P>
+<HR>
+<A HREF="uiuc.sw.linux-8.html">Next</A>
+<A HREF="uiuc.sw.linux-6.html">Previous</A>
+<A HREF="uiuc.sw.linux.html#toc7">Contents</A>
+</BODY>
+</HTML>

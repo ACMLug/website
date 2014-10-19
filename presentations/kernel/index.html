@@ -1,0 +1,83 @@
+<html>
+<head>
+<title>Kernel Compilation talk for LUG Installfest</title>
+</head>
+<body>
+<h1>Making a Custom Kernel</h1><br>
+
+<ul>
+<li>Why compile?
+<ul>
+<li>Customization</li>
+<li>Remove bloat</li>
+</ul></li>
+<li>Getting the kernel source
+<ul>
+<li>Full source tarball</li>
+<li>Patches</li>
+<li>Installing the source
+<ul>
+<li>For the full tarball:
+<ul>
+<li><code># cd /usr/src</code></li>
+<li><code># rm linux</code></li>
+<li><code># tar -zxvf linux-2.2.12.tar.gz</code></li>
+<li><code># mv linux linux-2.2.12 ; ln -s linux linux-2.2.12</code></li>
+</ul></li>
+<li>For a patch:
+<ul>
+<li>You need every incremental patch between your current kernel and your target kernel</li>
+<li>For a compressed patch:
+<ul>
+<li><code># cd /usr/src</code></li>
+<li><code># zcat patch.gz | patch -p1</code></li>
+</ul></li>
+<li>For an uncompressed patch:
+<ul>
+<li><code># cd /usr/src</code></li>
+<li><code># patch -p1 < patch.diff</code></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>Configuring the kernel
+<ul>
+<li>Three different ways to configure the kernel:
+<ul>
+<li><code>make config</code> -- text-based Q&A-style configuration</li>
+<li><code>make menuconfig</code> -- ncurses-based configuration</li>
+<li><code>make xconfig</code> -- X-based configuration</li>
+</ul></li>
+</ul></li>
+<li>Building the kernel
+<ul>
+<li><code># make clean</code></li>
+<li><code># make dep</code></li>
+<li><code># make [zImage|bzImage|zlilo|bzlilo|zdisk|bzdisk]</code></li>
+</ul></li>
+<li>Modules
+<ul>
+<li><code># make modules modules_install</code></li>
+<li>using modules</li>
+<li>why modules?</li>
+</ul></li>
+<li>Installing the new kernel with LILO
+<ul>
+<li>Copy the new kernel to /boot: <code># cp /usr/src/linux/arch/i386/boot/vmlinux /boot/vmlinuz-2.2.12</code></li>
+<li>Edit /etc/lilo.conf:
+<ul>
+<li>Edit the stanza for the old kerel, to change the label name from linux to something else.  I prefer to label the current kernel as "linux", and label previous kernels with their version number, ie "linux-2.2.5"</li>
+<li>Add a new stanza for the new kernel:<br>
+<code>
+	image = /boot/vmlinux-2.2.12<br>
+	label = linux
+</code>
+</li>
+</ul></li>
+<li>Run <code>/sbin/lilo -v</code> to reinstall lilo with the new settings</li>
+<li>Reboot the machine (<code># shutdown -r now</code>) to use the new kernel</li>
+</ul></li>
+</ul>
+</body>
+</html>
+

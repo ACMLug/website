@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Writing a Simple Signature Randomizer in C Using FIFOs: Advantages and Disadvantages of Using Named Pipes (FIFOs)</TITLE>
+ <LINK HREF="sigrandd-3.html" REL=next>
+ <LINK HREF="sigrandd-1.html" REL=previous>
+ <LINK HREF="sigrandd.html#toc2" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="sigrandd-3.html">Next</A>
+<A HREF="sigrandd-1.html">Previous</A>
+<A HREF="sigrandd.html#toc2">Contents</A>
+<HR>
+<H2><A NAME="s2">2. Advantages and Disadvantages of Using Named Pipes (FIFOs)</A></H2>
+
+<H2><A NAME="ss2.1">2.1 Advantages</A>
+</H2>
+
+<P>
+<UL>
+<LI>Every application gets transparent access to a
+randomized <CODE>.signature</CODE></LI>
+<LI>We are guaranteed that the <CODE>.signature</CODE> will change
+every time it is accessed, if so desired.  (This is
+not true for, say, crontab-based <CODE>.signature</CODE>
+randomizers)</LI>
+<LI>We are allowed infinite control over the contents of
+<CODE>.signature</CODE>.</LI>
+</UL>
+<H2><A NAME="ss2.2">2.2 Disadvantages</A>
+</H2>
+
+<P>
+<UL>
+<LI>If the signature randomizing daemon is not running,
+reading <CODE>.signature</CODE> will block forever.</LI>
+<LI>The daemon must be running essentially 24/7 (which is
+probably not acceptable on machines you do not own)</LI>
+</UL>
+<HR>
+<A HREF="sigrandd-3.html">Next</A>
+<A HREF="sigrandd-1.html">Previous</A>
+<A HREF="sigrandd.html#toc2">Contents</A>
+</BODY>
+</HTML>

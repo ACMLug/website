@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>LUG Install fest -- Sound</title>
+  </head>
+
+  <body>
+    <h1>LUG Install fest -- Sound</h1>
+    <ul>
+      <li>Before You Begin, find out:
+	<ul>
+	  <li>Sound Card Name, Manufacturer
+	  <li>Is it ISA or PCI
+	  <li>If it is ISA, is it PnP?
+	  <li>If it isn't PnP, what is the IRQ, DMA, IO, etc.
+	</ul>
+      <li>If you have sndconfig (RedHat, Mandrake, Caldera, some other distros)
+	<ul>
+	  <li>It autodetects...no work required
+	  <li>If sound card is reported "Not Supported":
+	    <ul>
+	      <li>LUG recommends the AudioPCI (ESS 1371)
+	    </ul>
+	</ul>
+      <li>If you don't have sndconfig
+	<ul>
+	  <li>Compile kernel module
+	  <li>edit module configuration manually--location depends on distro: /etc/rc.d/rc.modules; /etc/conf.modules; others may be possible
+	  <li>here's where you need to know IRQ, DMA--they are module parameters
+	  <li>Make sure you have a /dev/dsp: as root 'mknod -m 660 /dev/dsp c 14 3'
+	</ul>
+      <li>Useful Sound-related programs
+	<ul>
+	  <li>Xmms: <a href="http://www.xmms.org">http://www.xmms.org</a>
+	    <ul>
+	      <li>Plays MP3, MOD, CDs  
+	    </ul>
+	  <li>TiMIDIty: <a href="http://www.goice.co.jp/member/mo/timidity/">http://www.goice.co.jp/member/mo/timidity/</a>
+	    <ul>
+	      <li>MIDI --> WAV converter, plays MIDI files
+	    </ul>
+	  <li>gmix/kmix
+	    <ul>
+	      <li>Volume Adjustment for GNOME/KDE
+	    </ul>	    
+	</ul>
+    </ul>
+    <hr>
+    <address><a href="mailto:scriber@bob.org">Joel Jordan</a></address>
+<!-- Created: Sun Oct 10 14:26:37 CDT 1999 -->
+<!-- hhmts start -->
+Last modified: Sun Oct 10 14:57:27 CDT 1999
+<!-- hhmts end -->
+  </body>
+</html>

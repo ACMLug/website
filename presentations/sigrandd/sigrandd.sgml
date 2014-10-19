@@ -1,0 +1,568 @@
+<!doctype linuxdoc system>
+<linuxdoc>
+  <article>
+    <titlepag>
+      <title>Writing a Simple Signature Randomizer in C Using FIFOs</title>
+      <author>
+        <name>Steven Engelhardt (sengelha@uiuc.edu)</name>
+      </author>
+      <date>2 November 1999</date>
+      <abstract>This document will explain how to create a randomized
+                <tt>.signature</tt> by using a number of advanced UNIX
+                programming techniques, including named pipes (FIFOs)
+                and writing a daemon.  It is intended for those who have
+                little to no programming experience with these concepts
+                before.</abstract>
+    </titlepag>
+    <toc>
+    <sect>
+      <heading>Introduction</heading>
+      <p>
+        NOTE: Many examples and explanations in this article were taken
+        from <tt>Advanced Programming in the Unix Environment</tt> by W.
+        Richard Stevens, (c) 1992.
+      </p>
+      <sect1>
+        <heading>Named Pipes (FIFOs)</heading>
+        <p>
+          FIFOs, sometimes called named pipes, are an UNIX interprocess
+          communication mechanism that is a standard part of POSIX.1.
+          While standard pipes can only be used between related
+          processes when a common ancestor has created the pipe, FIFOs
+          allow unrelated processes to exchange data.  A FIFO is
+          actually a type of file, and the standard file I/O functions
+          (<tt>open</tt>, <tt>close</tt>, <tt>read</tt>, <tt>write</tt>,
+          <tt>unlink</tt>, etc.) all work with FIFOs.
+
+          As you will see, using a FIFO for your <tt>.signature</tt> file
+          instantly allows every application access to a randomly created
+          <tt>.signature</tt>, without requiring modifications to the
+          individual applications.  To them, your <tt>.signature</tt> file
+          looks and acts just like a regular text file.
+        </p>
+      </sect1>
+      <sect1>
+        <heading>Basic Strategy for Writing a Signature Randomizer</heading>
+        <p>
+          Since FIFOs look and act just like regular files, we can
+          create a randomized <tt>.signature</tt> by simply making
+          <tt>.signature</tt> into a FIFO and having a process deliver
+          data to it upon request.  To do this, we can write a daemon that
+          will live "forever" and constantly tries to send a new, random
+          signature to the FIFO.
+        </p>
+      </sect1>
+    </sect>
+    <sect>
+      <heading>Advantages and Disadvantages of Using Named Pipes (FIFOs)</heading>
+      <sect1>
+        <heading>Advantages</heading>
+        <p>
+          <itemize>
+            <item>Every application gets transparent access to a
+                  randomized <tt>.signature</tt></item>
+            <item>We are guaranteed that the <tt>.signature</tt> will change
+                  every time it is accessed, if so desired.  (This is
+                  not true for, say, crontab-based <tt>.signature</tt>
+                  randomizers)</item>
+            <item>We are allowed infinite control over the contents of
+                  <tt>.signature</tt>.</item>
+          </itemize>
+        </p>
+      </sect1>
+      <sect1>
+        <heading>Disadvantages</heading>
+        <p>
+          <itemize>
+            <item>If the signature randomizing daemon is not running,
+                  reading <tt>.signature</tt> will block forever.</item>
+            <item>The daemon must be running essentially 24/7 (which is
+                  probably not acceptable on machines you do not own)</item>
+          </itemize>
+        </p>
+      </sect1>
+    </sect>
+    <sect>
+      <heading>How to Create a Named Pipe (FIFO)</heading>
+      <sect1>
+        <heading>Creating Using Command-Line Tools</heading>
+        <sect2>
+          <heading><tt>mkfifo</tt></heading>
+          <p>
+            Probably the easiest way to create a FIFO, if your system
+            supports it, is the <tt>mkfifo</tt> command.  From the man
+            page:
+
+            <tscreen><verb>
+mkfifo  [-m mode] [--mode=mode] [--help] [--version] filename...
+            </verb></tscreen>
+
+            It will create a FIFO with the specified filename and
+            optional permissions.  Since we want to create a
+            <tt>.signature</tt> file in our home directory, and we need
+            permissions to both read and write it, the appropriate command
+            line is:
+
+            <tscreen><verb>
+mkfifo --mode=0600 ~/.signature
+            </verb></tscreen>
+          </p>
+        </sect2>
+        <sect2>
+          <heading><tt>mknod</tt></heading>
+          <p>
+            Another easy way to create a FIFO, which may be supported 
+            on more systems, is the <tt>mknod</tt> command.  An excerpt
+            from the man page:
+
+            <tscreen><verb>
+mknod [-m mode] [--mode=mode] [--help] [--version] filename p
+            </verb></tscreen>
+
+            Therefore, the appropriate invocation is:
+
+            <tscreen><verb>
+mknod --mode=0600 ~/.signature p
+            </verb></tscreen>
+          </p>
+        </sect2>
+      </sect1>
+      <sect1>
+        <heading>Creating in a C Program</heading>
+        <sect2>
+          <heading><tt>mkfifo(3)</tt></heading>
+          <p>
+            An easy way to create a FIFO in a C program is to use the
+            <tt>mkfifo</tt> C library call.  From the <tt>mkfifo(3)</tt>
+            man page:
+
+            <tscreen><verb>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+int mkfifo(const char *pathname, mode_t mode);
+            </verb></tscreen>
+
+            <tt>pathname</tt> is the filename of the FIFO you want to
+            create, and <tt>mode</tt> is the FIFO's permissions.
+            <tt>mode</tt> is modified by the process's <tt>umask</tt> in
+            the usual way: the permissions of the created file are
+            (<tt>mode & ~umask</tt>).
+
+            The normal, successful return value from <tt>mkfifo</tt> is 0.
+            In the case of an error, -1 is returned and <tt>errno</tt> is
+            set appropriately.
+
+            Therefore, to create your <tt>.signature</tt> as a FIFO using
+            the <tt>mkfifo</tt> library call, your code would look like:
+             
+            <tscreen><verb>
+if (mkfifo("/home/sengelha/.signature", 0600)) {
+  /* An error occurred. Get details from perror() or
+   * strerror() */
+}
+            </verb></tscreen>
+          </p>
+        </sect2>
+        <sect2>
+          <heading><tt>mknod(2)</tt></heading>
+          <p>
+            Creating a FIFO with <tt>mknod(2)</tt> is very similar to
+            using <tt>mkfifo(3)</tt>.  <tt>mknod(2)</tt> may be more
+            portable than <tt>mkfifo</tt>, however.  From the
+            <tt>mknod(2)</tt> man page:
+
+            <tscreen><verb>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int mknod(const char *pathname, mode_t mode, dev_t dev);
+            </verb></tscreen>
+
+            <tt>pathname</tt> is treated exactly the same as in
+            <tt>mkfifo(3)</tt>.  However, <tt>mode</tt> is handled slighly
+            differently:  it specifies both the permissions to use and the
+            type of node to be created.  To do this, <tt>mode</tt> should
+            be a combination (using bitwise OR) of one of the file types
+            listed below and the permissions for the new node.  Remember,
+            <tt>mode</tt> can still be affected by <tt>umask</tt>.
+
+            The file type should be one of of <tt>S_IFREG</tt>,
+            <tt>S_IFCHR</tt>, <tt>S_IFBLK</tt>, and <tt>S_IFIFO</tt> to
+            specify a normal file, character special file, block special
+            file, or FIFO, respectively.  0 will create a normal file.
+
+            If the file type is <tt>S_IFCHR</tt> or <tt>S_IFBLK</tt> then
+            <tt>dev</tt> specifies the major and minor numbers of the
+            newly created device special file; otherwise it is ignored.
+
+            <tt>mknod</tt> returns zero on success, or -1 if an error
+            occurred and <tt>errno</tt> is set appropriately.
+             
+            Therefore, to create a named pipe <tt>.signature</tt> file
+            using <tt>mknod(2)</tt>, the code would look like:
+
+            <tscreen><verb>
+if (mknod("/home/sengelha/.signature", S_IFIFO | 0600, 0)) {
+  /* An error occurred. Get details from perror() or
+   * strerror() */
+}
+            </verb></tscreen>
+          </p>
+        </sect2>
+      </sect1>
+    </sect>
+    <sect>
+      <heading>Communicating Using a Named Pipe (FIFO)</heading>
+      <p>
+        For the most part, you can treat FIFOs as normal files, and use
+        the standard <tt>open</tt>, <tt>close</tt>, <tt>read</tt>,
+        <tt>write</tt>, etc., functions on them.  You should probably
+        avoid the <tt>f*</tt> functions (<tt>fopen</tt>, <tt>fread</tt>,
+        etc.), since they perform buffering.  However, there are two
+        functions where FIFO semantics are slightly different from normal:
+        <tt>open</tt> and <tt>write</tt>.
+      </p>
+      <sect1>
+        <heading><tt>open</tt></heading>
+        <p>
+          When we <tt>open</tt> a FIFO, the nonblocking flag
+          (<tt>O_NONBLOCK</tt>) affects what happens.
+
+          <itemize>
+            <item>In the normal case (<tt>O_NONBLOCK</tt> not specified),
+                  an <tt>open</tt> for read-only blocks until some other
+                  process opens the FIFO for writing.  Similarly, an
+                  <tt>open</tt> for write-only blocks until some other
+                  process opens the FIFO for reading.</item>
+            <item>If <tt>O_NONBLOCK</tt> is specified, an <tt>open</tt>
+                  for read-only returns immediately.  But an <tt>open</tt>
+                  for write-only returns an error with an <tt>errno</tt>
+                  of <tt>ENXIO</tt> if no process has the FIFO open
+                  for reading.</item>
+          </itemize>
+        </p>
+      </sect1>
+      <sect1>
+        <heading><tt>write</tt></heading>
+        <p>
+          Like a pipe, if we <tt>write</tt> to a FIFO that no process has
+          open for reading, the signal <tt>SIGPIPE</tt> is generated.
+          When the last writer for a FIFO closes the FIFO, an end of file
+          is generated for the reader of the FIFO.
+        </p>
+      </sect1>
+    </sect>
+    <sect>
+      <heading>How to Write a Daemon</heading>
+      <sect1>
+        <heading>Introduction to Daemons</heading>
+        <p>
+          Daemons are processes that live for a long time.  They are often
+          started when the system is bootstrapped and terminate only when
+          the system is shutdown.  We say they run in the background,
+          because they don't have a controlling terminal.
+        </p>
+      </sect1>
+      <sect1>
+        <heading>Coding Rules</heading>
+        <p>
+          <itemize>
+            <item>The first thing to do is call <tt>fork</tt> and have the
+                  parent <tt>exit</tt>.  This does several things.  First,
+                  if the daemon was started as a simple shell command,
+                  having the parent terminate makes the shell think that
+                  the command is done.  Second, the child inherits the
+                  process group ID of the parent but gets a new process
+                  ID, so we're guaranteed that the child is not a
+                  process group leader.  This is a prerequisite for the
+                  call to <tt>setsid</tt> that is done next.</item>
+            <item>Call <tt>setsid</tt> to create a new session.  The
+                  process becomes a session leader of a new session,
+                  becomes the process group leader of a new process group,
+                  and has no controlling terminal.</item>
+            <item>Change the current working directory to the root
+                  directory.  The current working directory inherited from
+                  the parent could be on a mounted filesystem.  Since
+                  daemons normally exist until the system is rebooted, if
+                  the daemon stays on a mounted filesystem, that
+                  filesystem cannot be unmounted.
+                    
+                  Alternately, some daemons might change the current
+                  working directory to some specific location, where they
+                  will do all their work.</item>
+            <item>Set the file mode creation mask to 0.  The file mode
+                  creation mask that's inherited could be set to deny
+                  certain permissions. </item>
+            <item>Unneeded file descriptors should be closed.</item>
+          </itemize>
+        </p>
+      </sect1>
+      <sect1>
+        <heading>Simple Daemon Creation Example</heading>
+        <p>
+          The following function can be used from a program that wants to
+          initialize itself as a daemon.
+
+          <tscreen><verb>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+int daemon_init(void)
+{
+  pid_t pid;
+
+  if ((pid = fork()) < 0) {
+    return -1;
+  } else if (pid != 0) {
+    exit(0);  /* parent goes bye-bye */
+  }
+
+  /* child continues */
+  setsid();   /* become session leader */
+  chdir("/"); /* change working directory */
+  umask(0);   /* clear our file mode creation mask */
+
+  return 0;
+}
+          </verb></tscreen>
+        </p>
+      </sect1>
+      <sect1>
+        <heading>Error Logging</heading>
+        <p>
+          When writing a daemon, you can't just write error messages to
+          standard error, since it shouldn't have a control terminal.
+          Instead, you should use the central error logging facility
+          <tt>syslog</tt>.  The interface to <tt>syslog</tt> is as
+          following:
+
+          <tscreen><verb>
+#include <syslog.h>
+
+void openlog(char* ident, int option, int facility);
+
+void syslog(int priority, char* format, ...);
+
+void closelog(void);
+          </verb></tscreen>
+        </p>
+        <sect2>
+          <heading><tt>openlog / closelog</tt></heading>
+          <p>
+            Calling <tt>openlog</tt> is optional.  If it's not called, the
+            first time <tt>syslog</tt> is called, <tt>openlog</tt> is
+            called automatically.  Calling <tt>closelog</tt> is also
+            optional -- it just closes the descriptor that was being used
+            to communicate with the <tt>syslogd</tt> daemon.a
+
+            Calling <tt>openlog</tt> lets us specify an <tt>ident</tt>
+            that is added to each log message.  This is normally the name
+            of the program (e.g., <tt>cron</tt>, <tt>inetd</tt>, etc.)
+            <tt>option</tt> specifies a number of logging options, such as
+            whether or not to log the process ID with each message.
+            <tt>facility</tt> allows the configuration file for
+            <tt>syslogd</tt> handle different types of messages
+            differently.  <tt>facility</tt> can still be specified as part
+            of the <tt>priority</tt> argument to <tt>syslog</tt>, using
+            bitwise OR.
+          </p>
+        </sect2>
+        <sect2>
+          <heading><tt>syslog</tt></heading>
+          <p>
+            We call <tt>syslog</tt> to generate a log message.
+            <tt>priority</tt> is a combination of the <tt>facility</tt>
+            referred to earlier and a <tt>level</tt>, which specifies the
+            priority of the message.  Valid <tt>levels</tt>, from highest
+            to lowest priority, are <tt>LOG_EMERG</tt>,
+            <tt>LOG_ALERT</tt>, <tt>LOG_CRIT</tt>, <tt>LOG_ERR</tt>,
+            <tt>LOG_WARNING</tt>, <tt>LOG_NOTICE</tt>, <tt>LOG_INFO</tt>,
+            and <tt>LOG_DEBUG</tt>.
+
+            <tt>format</tt> is passed to the <tt>vsprintf</tt> function
+            for formatting.  Any occurrence of the two characters
+            <tt>%m</tt> in <tt>format</tt> are first replaced with the
+            error message string (<tt>strerror</tt>) corresponding to
+            the value of <tt>errno</tt>.
+
+            A simple example for using syslog from a hypothetical
+            PostScript printer daemon is:
+          </p>
+        </sect2>
+        <sect2>
+          <heading>Error Logging Example:</heading>
+          <p>
+            <tscreen><verb>
+openlog("lprps", LOG_PID, LOG_LPR);
+syslog(LOG_ERR, "open error for %s: %m", filename);
+            </verb></tscreen>
+          </p>
+        </sect2>
+      </sect1>
+    </sect>
+    <sect>
+      <heading>A Simple <tt>.signature</tt> Daemon</heading>
+      <p>
+        <tscreen><verb>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
+#include <unistd.h>
+
+/* TODO:
+ * - There is a pretty obvious buffer overflow in the fact that signature
+ *   is 1024 bytes.  However, since REAL_SIGNATURE is predefined and
+ *   fortune is in a system directory, exploiting it may be difficult.
+ */
+
+#define FORTUNE "/usr/games/fortune -s"
+#define MAXLINE 81
+#define REAL_SIGNATURE \
+"  Steven Engelhardt <sengelha@uiuc.edu>\n"\
+"  http://www.uiuc.edu/ph/www/sengelha\n"\
+"\n"
+
+static char signature[1024];
+
+int check_cla(int argc, char* argv[])
+{
+  if (argc != 2) {
+    return -1;
+  }
+
+  return 0;
+}
+
+int daemon_init(void)
+{
+  pid_t pid;
+
+  if ((pid = fork()) < 0) {
+    return -1;
+  } else if (pid != 0) {
+    exit(0); /* parent exits */
+  }
+
+  setsid();
+  chdir("/");
+  umask(0);
+
+  return 0;
+}
+
+void create_fifo(char* filename)
+{
+  syslog(LOG_NOTICE, "%s is not a FIFO.  Attempting to make it into one.", filename);
+
+  if (mknod(filename, S_IFIFO | 0600, 0) == -1) {
+    syslog(LOG_ERR, "mknod error for %s: %s", filename, strerror(errno));
+    exit(EXIT_FAILURE);
+  }
+}
+
+void check_fifo(char* filename)
+{
+  struct stat buf;
+
+  if (stat(filename, &amp;buf) == -1) {
+    create_fifo(filename);
+    if (stat(filename, &amp;buf) == -1) {
+      syslog(LOG_ERR, "stat error for %s: %s", filename, strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  if (!S_ISFIFO(buf.st_mode)) {
+    if (unlink(filename) == -1) {
+      syslog(LOG_ERR, "unable to unlink %s: %s", filename, strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+
+    create_fifo(filename);
+  }
+}
+
+void create_rand_sig(void)
+{
+  FILE* fp;
+  char line[MAXLINE];
+
+  strcpy(signature, REAL_SIGNATURE);
+
+  if ((fp = popen(FORTUNE, "r")) == NULL) {
+    syslog(LOG_ERR, "popen error: %m");
+    exit(EXIT_FAILURE);
+  }
+
+  while (fgets(line, MAXLINE, fp) != NULL) {
+    strcat(signature, "  ");
+    strcat(signature, line);
+  }
+
+  if (ferror(fp)) {
+    syslog(LOG_ERR, "fgets error: %m");
+    exit(EXIT_FAILURE);
+  }
+
+  if (pclose(fp) == -1) {
+    syslog(LOG_ERR, "pclose error: %m");
+    exit(EXIT_FAILURE);
+  }
+}
+
+void monitor_fifo(char* filename)
+{
+  while (1) {
+    int fd;
+
+    check_fifo(filename);
+  
+    create_rand_sig(); 
+
+    if ((fd = open(filename, O_WRONLY)) == -1) {
+      syslog(LOG_ERR, "open error for %s: %s", filename, strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+
+    if (write(fd, signature, strlen(signature)) == -1) {
+      syslog(LOG_ERR, "write error for %s: %s", filename, strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+
+    (void) close(fd);
+
+    sleep(1);  /* to avoid dup sigs */
+  }
+}
+
+int main(int argc, char* argv[])
+{
+  if (check_cla(argc, argv)) {
+    fprintf(stderr, "%s: Usage error\n", argv[0]);
+    return -1;
+  }
+
+  if (daemon_init()) {
+    fprintf(stderr, "%s: Error initializing daemon\n", argv[0]);
+    return -1;
+  }
+
+  monitor_fifo(argv[1]);
+
+  return 0;
+}
+        </verb></tscreen>
+      </p>
+    </sect>
+  </article>
+</linuxdoc>

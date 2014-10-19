@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Shared Memory Under Linux: Writing a malloc debugger</TITLE>
+ <LINK HREF="shm-5.html" REL=next>
+ <LINK HREF="shm-3.html" REL=previous>
+ <LINK HREF="shm.html#toc4" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="shm-5.html">Next</A>
+<A HREF="shm-3.html">Previous</A>
+<A HREF="shm.html#toc4">Contents</A>
+<HR>
+<H2><A NAME="s4">4. Writing a malloc debugger</A></H2>
+
+<H2><A NAME="ss4.1">4.1 Concepts</A>
+</H2>
+
+<P>So right now we know that we can map memory into our process at an
+address we specify, and we can also set permissions on this memory
+using mprotect. Furthermore, we know that mapped memory is not
+actually allocated by the system until it is faulted (or accessed 
+in some way). We can use these facts to create a simple malloc
+debugger.
+<H2><A NAME="ss4.2">4.2 Goals</A>
+</H2>
+
+<P>Basically we want to protect against the most common memory usuage 
+errors using various combinations of mmap and mprotect so that when
+programs make these errors, they exit immediately with a <CODE>SEGV</CODE>
+instead of continuing to produce bizzare and (seemingly) unrelated 
+side effects.
+<H3>Overflows &amp; Underflows</H3>
+
+<P>The most common errors in programming with dynamic memory are buffer
+overflows (writing past the end of an allocated segment), and 
+underflows (writing in the memory before an allocated segment).
+<P>Here we take advantage of our little friend <CODE>mprotect()</CODE>
+So, essentially all we need to do is mark a page of memory ajoining
+the valid allocated memory with no access permissions. However, since
+we can only set permissions on entire pages of memory (and these pages
+must occur at multiples of the page size) we can only prevent buffer 
+overflows or underflows, but not both. 
+<H3>Using free'd memory</H3>
+
+<P>A third common mistake in programming is trying to acess already freed
+memory. We can prevent this easily enough by unmapping a
+<CODE>free()</CODE>'d region, and mapping that same address and length to 
+/dev/zero with no permissions set. Note this shouldn't cause any 
+memory leak, because the kernel should dispose of the 
+<CODE>unmap()</CODE>'ed pages, yet should not allocate any of the new 
+pages until the program faults them (and will subsequently seg fault 
+anyways).
+<H3>Derefrencing NULL</H3>
+
+<P>Here we can do the same concept for free'd memory, except for the
+address 0. Namely, we map a single page of no access memory to 
+address zero, so that if any application tries to dereference a 
+NULL pointer, it automatically segfaults. (Note that in normal
+operation, dereferencing and reading address 0 is undefined yet valid, 
+but writing to address 0 will usually segfault).
+<H2><A NAME="ss4.3">4.3 Code</A>
+</H2>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+#include &lt;stdio.h>
+#include &lt;unistd.h>
+#include &lt;sys/mman.h>
+#include &lt;sys/user.h>
+#include &lt;sys/types.h>
+#include &lt;sys/fcntl.h>
+#include &lt;signal.h>
+
+/* mymalloc
+ * A simple demonstration of how to build a malloc to catch buffer overflows.
+ * We store the length of the segment in both the beginning of the region, and
+ * in the protected area for redundancy.
+ */
+void *mymalloc(size_t len)
+{
+    void *buf;
+    /* 
+     * We're going to need 2 extra pages of memory - one for any offset
+     * carryover over a page boundry, and one to protect. 
+     */
+    size_t pages = (len &amp; PAGE_MASK) + 2;
+    /* The offset into our region where the user's memory starts */
+    size_t offset = PAGE_SIZE - (len &amp; ~PAGE_MASK);
+   
+  
+    if(offset &lt; sizeof(size_t))
+    {
+        pages++;
+        offset += PAGE_SIZE;
+    }
+    
+    if((buf = mmap(NULL, pages &lt;&lt; PAGE_SHIFT, PROT_READ | PROT_WRITE, 
+                    MAP_PRIVATE | MAP_ANONYMOUS, 0, 0)) == -1)
+    {
+        perror("mymalloc/mmap");
+        exit(1);
+    }
+
+    /* We store the length twice, because we need it in the beginning of the
+     * segment, and we can keep it in the protected region as well to double 
+     * check for heap corruption (ie: the user wrote to addresses BEFORE his
+     * memory)
+     */
+    *(size_t *)buf = len;
+    *(size_t *)(buf+offset+len) = len;
+   
+    if(mprotect(buf+offset+len, PAGE_SIZE, PROT_NONE) == -1)
+    {
+        perror("mymalloc/mprotect");
+        exit(1);
+    }
+
+    return buf+offset;
+}
+
+/* 
+ * myfree
+ * Will unmap memory, then remap that address to /dev/zero with no
+ * permissions. This has two effects: 
+ * 1. Using free'd addresses will cause a segfault
+ * 2. Freeing already free'd memory will cause a segfault (no error printed)
+ */ 
+void myfree(void *buf)
+{
+    void *start = (long)buf &amp; PAGE_MASK;
+    size_t offset = (long)buf &amp; ~PAGE_MASK;
+    /* Will segfault here on double-free */
+    size_t len = *(size_t *)start;
+    static int zfd = 0;
+
+    /* Get a file descriptor for /dev/zero */
+    if(!zfd)
+    {
+        if((zfd = open("/dev/zero", O_RDWR)) == -1)
+        {
+            perror("myfree/devzero");
+        }
+    }
+   
+    /* Check to see if we had to tack on another page in mymalloc */
+    if(buf - start &lt; sizeof(size_t))
+    {
+        start -= PAGE_SIZE;
+        len = *(size_t *)start;
+    }
+
+    /* Unprotect our memory */
+    if(mprotect(buf+len, PAGE_SIZE, PROT_READ) == -1)
+    {
+        perror("myfree/mprotect");
+        raise(SIGSEGV);
+    }
+                
+    /* Check to make sure lengths are consistant. If not, advise user to try 
+       using the (not yet written) underflow version of this library */
+    if(*(size_t *)(buf + len) != *(size_t *)start)
+    {
+        fprintf(stderr, "Error: heap corruption. Inconsistant allocation "
+                "sizes. Try using the underflow option to pinpoint source "
+                "of error\n");  
+        raise(SIGSEGV);
+    }
+   
+    if(munmap(start, len+offset+PAGE_SIZE) == -1)
+    {
+        perror("myfree/munmap");
+        raise(SIGSEGV);
+    }
+   
+    if(mmap(start, len+offset+PAGE_SIZE, PROT_NONE, MAP_FIXED | MAP_PRIVATE,
+                zfd, 0) == -1)
+    {
+        perror("myfree/mremap");
+    }
+}
+                            
+            
+</PRE>
+</CODE></BLOCKQUOTE>
+<HR>
+<A HREF="shm-5.html">Next</A>
+<A HREF="shm-3.html">Previous</A>
+<A HREF="shm.html#toc4">Contents</A>
+</BODY>
+</HTML>

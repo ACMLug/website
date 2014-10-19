@@ -1,0 +1,858 @@
+  uiuc.sw.linux FAQ
+  The UIUC Linux Users' Group
+  v0.2 Sunday, 4 April 1999
+
+  A collection of all the Frequently Asked Questions that pop up on the
+  newsgroup uiuc.sw.linux.
+  ______________________________________________________________________
+
+  Table of Contents
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  1. UIUC Linux Basics
+
+     1.1 What is Linux?
+     1.2 Is Linux UNIX?
+     1.3 Why should I use Linux?
+     1.4 What is a distribution?
+     1.5 What distribution do you recommend?
+     1.6 How do I install Linux?
+     1.7 What about FreeBSD, OpenBSD, and NetBSD?
+     1.8 What is LUG?
+     1.9 What is Encap?
+     1.10 What is X?
+
+  2. Installation and Booting
+
+     2.1 How can I dual boot Windows 9x and Linux?
+     2.2 How can I dual boot Windows NT(tm) and Linux?
+
+  3. Command Line and Administration
+
+     3.1 How can I list all the files in the current directory except for . and ..?
+     3.2 How do I set environment variables under sh derivatives (sh, bash, zsh, etc)?
+     3.3 How do I set environment variables under csh derivatives (csh, tcsh)?
+     3.4 How can I set my time from an atomic clock?
+     3.5 Why should I use ssh instead of telnet or rsh?
+     3.6 How do I upgrade my kernel?
+
+  4. The X Window System
+
+     4.1 How do I configure X?
+     4.2 How do I upgrade X?
+     4.3 What is a window manager?
+     4.4 Which window manager do you recommend?
+     4.5 How do I run X at a different color depth?
+     4.6 How do I remotely run X applications?
+     4.7 XDM is ugly.  What can I replace it with?
+     4.8 What are X resources?
+     4.9 Why should I use xauth instead of xhost?
+     4.10 How do I get my IntelliMouse(tm) wheel to work in X?
+
+  5. Desktop Environments
+
+     5.1 What are GNOME and KDE?
+     5.2 Are GNOME and KDE window managers?
+     5.3 Which of GNOME and KDE do you recommend?
+
+  6. Linux Applications
+
+     6.1 Why are my Netscape buttons black and white?
+     6.2 Where can I find information about filtering mail using procmail?
+     6.3 Is ICQ available for linux?
+     6.4 Is there a Netmeeting compatible program for Linux?
+     6.5 What word processors are available for Linux?
+     6.6 What spreadsheets are available for Linux?
+     6.7 Where can I look for other applications?
+
+  7. UIUC-Specific Information
+
+     7.1 How do I run Mentor Graphics remotely?
+     7.2 How can I use my Linux machine as my primary e-mail machine?
+     7.3 How can I change my from header in e-mails?
+
+  8. Unanswered (so far) Questions
+
+     8.1 How can I set up fetchmail/POP to read mail on my own machine?
+     8.2 How do I connect to a PPTP server?
+     8.3 How can I set up a serial terminal into my linux box?
+     8.4 How do I connect to UIUC using PPP?
+     8.5 How do I get gradebook to work under wine?
+     8.6 How do I use the URH printers from Linux?
+     8.7 How can I make my mouse "left-handed"?
+     8.8 Where can I get more information? (Books, web sites, howtos, etc)
+     8.9 How can I replicate one hard drive's contents to another?
+     8.10 How can I specify what kind of mouse I want to use on the console and X?
+     8.11 What is RPM?  How do I use it?
+     8.12 Why do fonts suck? (truetype, 100dpi fonts, unscaled)
+     8.13 How do I get my backspace key to work in X, Netscape, and rxvt?
+     8.14 What are shadow passwords?
+     8.15 How do I install and configure shadow passwords?
+     8.16 Where can I get information about UIUC site-licensed packages such as Motif?
+     8.17 How can I access my Linux partition from Windows?
+     8.18 How can I use LPR from Windows?
+     8.19 Why does Netscape crash on any Java applet (old libc5 version conflict, may not be applicable anymore)
+     8.20 How can I debug LILO problems (LI, etc)
+     8.21 How do I change the background in X?
+     8.22 How do I have Linux boot up into a X login/password prompt?
+     8.23 How can I change my resolution in X?
+     8.24 How do I change my path?
+     8.25 How do I get NUM LOCK to default to on?
+     8.26 My (very large, greater than 8.4GB) hard drive isn't supported.
+     8.27 How do I change my Emacs colors?
+     8.28 How do I change the default colors of my XTerm or RXVT?
+
+  9. About this Document
+
+     9.1 Who helped with creating this document?
+     9.2 How was this document created?
+
+  10. Trademarks
+
+
+
+  ______________________________________________________________________
+
+  1.  UIUC Linux Basics
+
+  1.1.  What is Linux?
+
+  Linux is a free UNIX(tm)-like operating system developed by a loosely-
+  knit team of programmers all around the world.  Originally created in
+  1991 by Linus Torvalds, it contains all the features you would expect
+  from a modern fully-fledged UNIX, including preemptive multitasking,
+  multi-threading, symmetric multiprocessing, virtual memory, shared
+  libraries, demand paging, shared copy-on-write executables, advanced
+  memory management, and one of the fastest TCP/IP network stacks
+  available.
+
+  It is distributed under the GNU General Public License.
+
+
+  1.2.  Is Linux UNIX?
+
+  Technically, no.  UNIX is a registered trademark of the X/Open Company
+  Ltd., and Linux cannot be called UNIX without permission from them.
+  Furthermore, Linux is not based off of any of the source code from the
+  original versions of UNIX, unlike the free BSD variants. However, you
+  will probably find that many, if not most, of the standard UNIX
+  applications are available under Linux; quite often porting software
+  to Linux simply requires little more than a recompile.
+
+
+
+  1.3.  Why should I use Linux?
+
+  Linux is a technically advanced, Open Source(tm), UNIX-like operating
+  system.  It is stable, efficient, and runs on many different
+  architectures. Many pieces of software, including the Linux kernel
+  itself, can be obtained free of  charge over the Internet.  It is
+  especially popular as a server, providing services such as DNS, NIS,
+  HTTP, NFS, and SMB (Windows(tm) file and printer sharing), and as a
+  high-power low-cost workstation.
+
+
+  1.4.  What is a distribution?
+
+  Linux, in general, usually refers to the kernel of the operating
+  system.  Many other components are necessary for the use of a
+  computer, such as applications, libraries, configuration files,
+  startup files, etc.  Distributions, such as Red Hat, Debian, SuSE,
+  Slackware, Stampede, and Caldera, package all these components
+  together with the Linux kernel and provide mechanisms for its
+  installation.  Each distribution has its own "personality" and is
+  tailored towards a certain group of people.
+
+  A more complete list of distributions is available at
+  http://www.linuxhq.com/dist-index.html.
+
+
+  1.5.  What distribution do you recommend?
+
+  There is no one "best" distribution.  For beginners, we often
+  recommend Red Hat or SuSE; for slightly more advanced users, we also
+  recommend Debian.  Try as many different distributions out as you can;
+  soon you will find which appeals to you the most.
+
+
+  1.6.  How do I install Linux?
+
+  After deciding on a distribution, you can usually install Linux using
+  a number of different methods, including CD-ROM, floppy, FTP, NFS, and
+  another partition on your hard drive.  This method is highly dependent
+  on the distribution, and we recommend that you visit your chosen
+  distribution's web site and follow their instructions.
+
+
+  1.7.  What about FreeBSD, OpenBSD, and NetBSD?
+
+  These are other excellent, free UNIX-like operating systems available
+  for many different architectures.  They have slightly different feels
+  than Linux, but many run Linux binaries.  They also have a less
+  restrictive license, allowing redistribution without releasing the
+  source code.  We encourage you to try them out as well.
+
+  Please visit http://www.freebsd.org, http://www.openbsd.org, or
+  http://www.netbsd.org.
+
+
+  1.8.  What is LUG?
+
+  LUG refers to the UIUC Linux Users' Group.  We usually meet at 8pm on
+  Tuesdays in 1102 DCL.  Feel free to drop in with questions, comments,
+  or simply to talk about what's new with Linux; new members are always
+  welcome.  Our web page is http://www.acm.uiuc.edu/lug/.
+
+
+
+
+
+  1.9.  What is Encap?
+
+  From the UIUC Encap Home Page:
+
+  "Encaps" are precompiled, easily installable packages in a format that
+  makes software maintenance very easy. Encaps of many public domain
+  utilities are available for most major operating systems.
+
+
+  1.10.  What is X?
+
+  X, otherwise known as the X Window System or X11, is a network
+  transparent window system which runs on a wide range of computing and
+  graphics machines.  It is also architecture-independent, so you can
+  remotely run an application from a Sun to your Linux box (for
+  example).  The version of X that usually comes with Linux is called
+  XFree86.
+
+
+  2.  Installation and Booting
+
+  2.1.  How can I dual boot Windows 9x and Linux?
+
+  Please see the Linux+Win95 HOWTO at
+  http://metalab.unc.edu/LDP/HOWTO/mini/Linux+Win95.html.
+
+
+  2.2.  How can I dual boot Windows NT(tm) and Linux?
+
+  If you plan on using LILO as your primary bootloader, the instructions
+  should be nearly exactly the  same as in "How do I dual boot Windows
+  9x and Linux?"  If you plan on using the NT bootloader, please see the
+  Linux+NT-Loader HOWTO at
+  http://metalab.unc.edu/LDP/HOWTO/mini/Linux+NT-Loader.html.
+
+
+  3.  Command Line and Administration
+
+  3.1.  How can I list all the files in the current directory except for
+  . and ..?
+
+  If you are using GNU ls, then ls -A will do it.  Otherwise, use the
+  regular expression "* .[^.]* ..?*".
+
+
+  3.2.  How do I set environment variables under sh derivatives (sh,
+  bash, zsh, etc)?
+
+  To set environment variables in the Bourne-derived shells, use the
+  export command, as in:
+
+  export VARIABLE=value
+
+  Place this in the proper dot-file for your shell (.profile, .bashrc,
+  .zshrc, .zshenv, etc).
+
+
+  3.3.  How do I set environment variables under csh derivatives (csh,
+  tcsh)?
+
+  The C-Shell uses a different syntax than the Bourne shells, and so you
+  will need to use setenv, as in:
+
+  setenv VARIABLE value
+
+
+  Again, place this in the proper dot-file for your shell (.chsrc,
+  .login, etc)
+
+
+  3.4.  How can I set my time from an atomic clock?
+
+  From a posting to uiuc.sw.linux by Mark Roth,
+
+  First obtain the package xntp.  Then run "ntpdate ntp.uiuc.edu" once
+  on bootup, and run xntpd to keep the clock synced.  Put "server
+  ntp.uiuc.edu" in /etc/ntp.conf so xntpd knows where to get its time
+  information.
+
+
+  3.5.  Why should I use ssh instead of telnet or rsh?
+
+  Traditionally, telnet and rsh do not encrypt their connections.
+  Therefore, anybody who can access a computer between yours and the
+  destination could easily grab your password if you use those
+  utilities.  Ssh protects against this attack, along with IP spoofing,
+  IP source routing, DNS spoofing, and X attacks based on X
+  authentication data.  Furthermore, ssh automatically sets up X
+  forwarding for you; there is no need to mess with xhost or xauth.
+
+  To learn more about ssh, visit the ssh FAQ.
+
+
+  3.6.  How do I upgrade my kernel?
+
+  Please see the Kernel HOWTO at
+  http://metalab.unc.edu/LDP/HOWTO/Kernel-HOWTO.html.
+
+
+  4.  The X Window System
+
+  4.1.  How do I configure X?
+
+  If you are running Red Hat, you can try the command Xconfigurator.
+  Otherwise, try using the program XF86Setup (a graphical configuration
+  program that uses TCL/TK).  Since XF86Setup does not exist everywhere,
+  xf86config, a command-line tool, can also be used to configure your X
+  setup.
+
+  Alternatively, you can edit your XF86Config (which is usually in /etc/
+  or /etc/X11/) with your favorite text editor.
+
+
+  4.2.  How do I upgrade X?
+
+  If you are using a distribution such as Red Hat or Debian, we
+  recommend that you look for the appropriate packages and upgrade using
+  that method.  Specifically, the Red Hat packages can probably be found
+  at ftp://updates.redhat.com.  If you want to compile the source code
+  yourself, please look for the packages at ftp://ftp.xfree86.org or a
+  mirror.
+
+
+  4.3.  What is a window manager?
+
+  A window manager is the program that determines how things like window
+  borders, icons, and menus are drawn.  By changing the window manager
+  you can make your desktop look like nearly anything you want.  For
+  example, there are window managers that emulate the look and feel of
+  Windows 95, the Macintosh(tm), NeXT(tm), etc.
+
+
+  4.4.  Which window manager do you recommend?
+
+  Window Maker is a very popular window manager that has a NeXT-like
+  interface.  Other popular window managers include Enlightenment, FVWM,
+  IceWM, and AfterStep.  Like distributions, no one window manager is
+  the "best" for everyone.  Information about many different window
+  managers, with screenshots, is available at
+  http://www.plig.org/~xwinman/.
+
+
+  4.5.  How do I run X at a different color depth?
+
+  The easiest way to do this is to start X by using "startx -- -bpp 16"
+  where 16 is the color depth you wish to run.  Alternatively, you can
+  manually edit the startx script to always use this color depth, or
+  manipulate your XF86Config (which is usually in /etc/ or /etc/X11/) by
+  removing all references to other color depths.  For example, the
+  relevant section in my XF86Config looks like:
+
+
+
+       Section "Screen"
+           Driver      "accel"
+           Device      "Matrox Millennium II 4MB"
+           Monitor     "Gateway2000 Vivitron 17"
+           Subsection "Display"
+               Depth       16
+               Modes       "1152x864" "1024x768" "800x600" "640x480" "640x400"
+           EndSubsection
+       EndSection
+
+
+
+
+  Be sure to back up your XF86Config before attempting modifications.
+
+
+  4.6.  How do I remotely run X applications?
+
+  If you use ssh, everything should already be set up.  Otherwise, a
+  quick tutorial on xauth will tell you something like:
+
+
+
+       localmachine > xauth list | grep localmachine
+       localmachine:0 MIT-MAGIC-COOKIE-1 102384102398410923841023481234
+       ... other stuff ...
+       localmachine > telnet remotemachine
+       remotemachine > xauth add localmachine:0 MIT-MAGIC-COOKIE-1 102384102398410923841023481234
+       remotemachine > export DISPLAY=localmachine:0
+
+
+
+
+  That's all there is to it.  Of course, if you are using csh or tcsh,
+  you will have to use setenv instead of export.
+
+  More information is available at
+  http://www.acm.uiuc.edu/workshops/security/x.html.
+
+
+  4.7.  XDM is ugly.  What can I replace it with?
+
+  Some popular alternatives include kdm, gdm, login.app, and wdm.
+
+
+  4.8.  What are X resources?
+
+  X maintains a global, network-aware resource database that is often
+  referred to as the X resource database.  Items are added to this
+  database using the xrdb command, usually from files with names like
+  Xdefaults and Xresources. X resources are used by most X programs for
+  their configuration, and allow extreme levels of customization.
+  However, learning how to manipulate them is somewhat intimidating.
+
+  An example of a small .Xresources file:
+
+
+
+       rxvt.background:   Black
+       rxvt.foreground:   AntiqueWhite
+       rxvt.cursorColor:  Red3
+       rxvt.font:         fixed
+
+
+
+
+  Look into the commands xrdb and editres to find out how to manipulate
+  X resources.
+
+
+  4.9.  Why should I use xauth instead of xhost?
+
+  If you use xhost to remotely display X applications, then you are
+  leaving yourself wide open to easy X session hijacking, password
+  grabbing, and the like.  This is because the line "xhost +hostname"
+  allows anybody at the computer named "hostname" to access your X
+  session.  "xhost +" allows anybody in the world access to your X
+  session -- a very bad thing indeed.
+
+  Xauth is much better than xhost because it requires the attacker to
+  exert more effort to compromise security.  By creating a passcode, and
+  using that passcode on the remote computer to access your X session,
+  you are preventing people who don't know the passcode from getting at
+  your machine.  Of course, if the connection to the remote computer is
+  unencrypted, they could conceivably steal the passcode.  However,
+  that's the least of your worries in that case.
+
+  More information is available at
+  http://www.acm.uiuc.edu/workshops/security/x.html.
+
+
+  4.10.  How do I get my IntelliMouse(tm) wheel to work in X?
+
+  For a PS/2 mouse:
+
+  First, you'll need to edit your XF86Config file (in /etc or /etc/X11)
+  to set the Protocol in the Pointer section to IMPS/2 [1].  Now, go to
+  http://solaris1.mysolution.com/~jcatki/imwheel/ and download the
+  imwheel package.  Follow the installation instructions, and the wheel
+  should now work.  Note that the same procedure is used for Logitech
+  wheel mice, too.
+
+  [1] Here's the Pointer section of XF86Config after following the
+  instructions for installing imwheel.
+
+
+
+
+
+
+
+  Section "Pointer"
+     Protocol        "IMPS/2"
+     Device          "/dev/psaux"
+     BaudRate        1200
+     ZAxisMapping    4 5
+     Buttons         3
+  EndSection
+
+
+
+
+
+  5.  Desktop Environments
+
+  5.1.  What are GNOME and KDE?
+
+  GNOME and KDE aim to be fully-functional, integrated desktop
+  environments.  They consist of a number of different programs that all
+  look and act similarly, and can be customized in a common way.  GNOME
+  can be found at http://www.gnome.org/, and KDE can be found at
+  http://www.kde.org/.
+
+
+  5.2.  Are GNOME and KDE window managers?
+
+  No, they are not.  GNOME and KDE work with a number of different
+  window managers, and encompass much more than the simple manipulation
+  of windows.  However, each one of them recommends a window manager
+  that "works best."  For GNOME, the recommended window manager is
+  Enlightenment, and for KDE it is the included KWM.  Other window
+  managers, such as Window Maker, integrate well with both GNOME and
+  KDE.
+
+
+  5.3.  Which of GNOME and KDE do you recommend?
+
+  As of this writing, KDE seems to be further ahead in terms of end-user
+  ease of use and installation, while GNOME has numerous technical
+  merits.  Try both out and find which appeals to you more.
+
+
+  6.  Linux Applications
+
+  6.1.  Why are my Netscape buttons black and white?
+
+  This problem seems to be specific to certain color depths.  Try
+  changing your color depth to a different value.
+
+
+  6.2.  Where can I find information about filtering mail using proc-
+  mail?
+
+  Visit Joe Gross's excellent procmail tutorial at
+  http://www.stimpy.net/procmail/tutorial/.
+
+
+  6.3.  Is ICQ available for linux?
+
+  Yes!  There are numerous clones available (not to mention Mirabilis'
+  java version, which is not very good).  See
+  http://www.portup.com/~gyandl/icq/.
+
+
+
+
+
+  6.4.  Is there a Netmeeting compatible program for Linux?
+
+  Netmeeting uses H.323 for audio conferencing, and there is work to
+  develop a free implementation at Open H.323. They have some
+  source/binaries available, and people have used them to successfully
+  talk to NetMeeting 3.0. Unfortunately, Microsoft used a proprietary
+  system for the video.
+
+
+  6.5.  What word processors are available for Linux?
+
+  Word Perfect, Star Office, ApplixWare, LyX, KOffice.
+
+
+  6.6.  What spreadsheets are available for Linux?
+
+  Star Office, ApplixWare, KOffice, Gnumeric.
+
+
+  6.7.  Where can I look for other applications?
+
+  A good starting point is either http://freshmeat.net/ or
+  http://www.linuxapps.com/.
+
+
+  7.  UIUC-Specific Information
+
+  7.1.  How do I run Mentor Graphics remotely?
+
+  The primary problem in getting Mentor Graphics to work remotely seems
+  to be having the right fonts installed.  To get the right fonts, you
+  must run the mgc_font_collect script on a machine that has Mentor
+  Graphics installed, and then copy these fonts to your computer and add
+  them to your X font database.
+
+
+  7.2.  How can I use my Linux machine as my primary e-mail machine?
+
+  Surprisingly this is pretty straight-forward. In Redhat, there is
+  almost no dreaded sendmail hackery to be done. First off, if you don't
+  have a static IP, you're going to be SOL, and you're going to have to
+  settle for using fetchmail or POP and changing your FROM address in
+  your mail client. In which case, refer to those questions in this FAQ.
+
+  If you do have a static IP address, and have a registered domain name
+  (note, this is probably only possible if you live in private housing.
+  In which case you can usually request a static IP), then all you have
+  to do is edit /etc/sendmail.cw and on a line by itself, put in the
+  domainname that points to your static IP address, then restart
+  sendmail (something along the lines of /etc/rc.d/init.d/sendmail
+  restart for System V style inits).
+
+
+
+  7.3.  How can I change my from header in e-mails?
+
+  Cool mail clients first: in Mutt, simply add
+
+  my_hdr From: someuser@somewhere.net (Some Name)
+
+  to .muttrc. In Pine, you can set the hostname of the from field but
+  apparently not much else. Go to (S)etup, then (C)onfig, then edit the
+  second field down.  In Netscape you may specify the whole email
+  address under Edit->Prefrences->Identity.
+
+
+  8.  Unanswered (so far) Questions
+
+  8.1.  How can I set up fetchmail/POP to read mail on my own machine?
+
+
+
+  8.2.  How do I connect to a PPTP server?
+
+
+
+  8.3.  How can I set up a serial terminal into my linux box?
+
+
+
+  8.4.  How do I connect to UIUC using PPP?
+
+
+
+  8.5.  How do I get gradebook to work under wine?
+
+
+
+  8.6.  How do I use the URH printers from Linux?
+
+
+
+  8.7.  How can I make my mouse "left-handed"?
+
+
+
+  8.8.  Where can I get more information? (Books, web sites, howtos,
+  etc)
+
+
+
+  8.9.  How can I replicate one hard drive's contents to another?
+
+
+
+  8.10.  How can I specify what kind of mouse I want to use on the con-
+  sole and X?
+
+
+
+  8.11.  What is RPM?  How do I use it?
+
+
+
+  8.12.  Why do fonts suck? (truetype, 100dpi fonts, unscaled)
+
+
+
+  8.13.  How do I get my backspace key to work in X, Netscape, and rxvt?
+
+
+
+  8.14.  What are shadow passwords?
+
+
+
+  8.15.  How do I install and configure shadow passwords?
+
+
+
+
+
+  8.16.  Where can I get information about UIUC site-licensed packages
+  such as Motif?
+
+
+
+  8.17.  How can I access my Linux partition from Windows?
+
+
+
+  8.18.  How can I use LPR from Windows?
+
+
+
+  8.19.  Why does Netscape crash on any Java applet (old libc5 version
+  conflict, may not be applicable anymore)
+
+
+
+  8.20.  How can I debug LILO problems (LI, etc)
+
+
+
+  8.21.  How do I change the background in X?
+
+
+
+  8.22.  How do I have Linux boot up into a X login/password prompt?
+
+
+
+  8.23.  How can I change my resolution in X?
+
+
+
+  8.24.  How do I change my path?
+
+
+
+  8.25.  How do I get NUM LOCK to default to on?
+
+
+
+  8.26.  My (very large, greater than 8.4GB) hard drive isn't supported.
+
+
+
+  8.27.  How do I change my Emacs colors?
+
+
+
+  8.28.  How do I change the default colors of my XTerm or RXVT?
+
+
+
+  9.  About this Document
+
+  9.1.  Who helped with creating this document?
+
+  This document was originally created by Steven Engelhardt
+  (sengelha@uiuc.edu), with help from Andrew Ho, Mark Roth, Todd
+  Ostermeier, Jay Tamboli, David Terrell, and others.
+
+  The current maintainer is Steven Engelhardt.
+
+
+
+  9.2.  How was this document created?
+
+  This document was originally written in SGML.  Using the Debian
+  sgmltools package, it is converted into the various formats for
+  distribution, which includes HTML, ASCII, and PostScript.
+
+
+  10.  Trademarks
+
+  UNIX
+
+  Open Source
+
+  IntelliMouse
+
+  Windows
+
+  Macintosh
+
+  NeXT
+
+  NT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

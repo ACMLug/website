@@ -1,0 +1,418 @@
+<html>
+  <head>
+    <title>University of Illinois, Linux Users' Group</title>
+<script language=javascript>
+function bVer(){
+  this.ie=document.all?1:0
+  this.ns=document.layers?1:0;
+}
+bn=new bVer()
+
+function lObj(obj){									
+  this.css=bn.ns?document[obj]:document.all[obj].style
+  this.divMove=divMoveIt;
+}
+
+function hideIt() {
+  if(bn.ns) {document.def.visibility='hidden';}
+  else if(bn.ie) {document.all.def.style.visibility='hidden';}
+}
+
+function divMoveIt(y){
+  this.y=y
+  this.css.top=this.y
+}
+
+function rePos() {
+if(bn.ie) {bg1.divMove(document.body.scrollTop);}
+else if(bn.ns) {
+  bg1.divMove(window.pageYOffset);
+  t1=setTimeout("rePos()", 2)
+  }
+}
+
+function init() {
+  bg1=new lObj('def');
+  if(bn.ns) {rePos();}
+  else if(bn.ie) {window.onscroll=rePos;}
+}
+
+onload=init;
+</script>
+  </head>
+  <body bgcolor=#FFFFFF text="#000000" link="#336699" vlink="#336699" alink="#336699">
+<!-- defunct thing...
+<div id=def style="position:absolute; top:0px; left:0px; z-index:1">
+<a href="javascript:hideIt()"><img src="images/bg.gif" height=488 width=696 border=0></a>
+</div>
+-->
+<table cellspacing="0" cellpadding="2" border="0" width="100%">
+      <tr>
+        <td align="left" valign="bottom">
+          <a href="index.html"><img src="images/lug.jpg" border="0" alt="LUG, UIUC" width="250" height="160"></a>
+        </td>
+        <td align="right">
+          <table border="0" cellpadding="1" cellspacing="0" width="90%">
+            <tr>
+              <td>
+                <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                  <tr>
+                    <td bgcolor="#FFFFFF">
+                      <table border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF" width="100%">
+                        <tr>
+                          <td align="center" bgcolor="#EEEEEE">
+                            <strong><font color="#000000">Linux Users' Group at UIUC</font></strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <font size="-1">
+                              <p>
+                                Welcome to the Linux Users' Group at the University of Illinois in Urbana Champaign.  LUG was a
+                                Special Interest Group in the <a href="http://www.acm.uiuc.edu/">Association for Computing Machinery.</a>
+                                Former members are encouraged to attend <a href="http://www.acm.uiuc.edu">SigUNIX</a>
+                              </p>
+                              Mail the <a href="mailto:lug@uiuc.edu">LUG chair(s)</a><br>
+                              Mail the <a href="mailto:lug@acm.uiuc.edu">LUG mailing list</a><br>
+                              Visit the <a href="news://uiuc.sw.linux">UIUC Linux Newsgroup</a><br>
+                            </font>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <hr>
+    <table cellspacing="0" cellpadding="2" border="0" width="100%" bgcolor="#000000">
+      <tr>
+        <td>
+          <table cellspacing="0" cellpadding="3" border="0" width="100%" bgcolor="#BBDDFF">
+            <tr>
+              <td valign="top">
+                <table border="0" cellpadding="0" cellspacing="3" width="100%">
+                  <tr>
+                    <td>
+                      <table border="0" cellpadding="1" cellspacing="0" bgcolor="#000000" width="100%">
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                              <tr>
+                                <td bgcolor="#FFFFFF">
+                                  <table border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF" width="100%">
+                                    <tr>
+                                      <td width="100%" align="center" bgcolor="#EEEEEE">
+                                        <strong><font color="#000000">News and Upcoming Events</font></strong>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <font size="-1">
+                                          <p>
+                                          <ul>
+                                              <li><b>2003-04-14: LUG has officially been undispanded, after 3 years of zero attendance.  Today was supposed to be the day we have a meeting to discuss what to put up on this website, but only one person attended, one of those just happening to be in the ACM office.  Former members are encouraged to bitch out <a href="mailto:mperry1@uiuc.edu">Mike Perry</a> for killing LUG in the first place. :)</b></li>
+                                              <li>2000-03-28: LUG has officially disbanded, after 4 weeks of almost zero attendance. Today was supposed to be a meeting to discuss methods of rejuvinating LUG, but only 3 people attended, two of those just happened to be in the ACM office. Former members are encouraged to attend <a href="http://www.acm.uiuc.edu/sigunix">SigUNIX</a>
+                                              <li>2000-02-14: We are gearing up for Engineering Open House!  Come
+                                                  to a meeting and join in on our project, NJAMD, a Purify-like
+                                                  tool to aid in debugging things such as memory leaks and
+                                                  forgetting to close file handles.
+                                              <li>1999-11-02: We have added some <a
+                                                  href="presentations/index.html">presentations</a> to our web page.
+                                              <li>1999-10-12: We're having another <a href="install99/index.html">Install
+                                                  Fest</a> on October 16th and 17th from 1-5 PM in 1320 DCL.</li>
+                                              <li>1999-09-07: LUG meeting: 8pm, 2240 DCL.  We'll meet at the ACM Office (1225
+                                                  DCL) beforehand.</li>
+                                              <li>1999-08-31: Our first meeting took place.  This year's LUG chairs are
+                                                  <a href="mailto:sengelha@uiuc.edu">Steven Engelhardt</a> and
+                                                  <a href="mailto:mperry1@uiuc.edu">Mike Perry</a>.</li>
+                                            </ul>
+                                          </p>
+                                        </font>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <table border="0" cellpadding="1" cellspacing="0" bgcolor="#000000" width="100%">
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                              <tr>
+                                <td bgcolor="#FFFFFF">
+                                  <table border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF" width="100%">
+                                    <tr>
+                                      <td width="100%" align="center" bgcolor="#EEEEEE">
+                                        <strong><font color="#000000">What is Linux?</font></strong>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <font size="-1">
+                                          <p>
+                                            Linux is a freely-distributable implementation of UN*X, started from scratch by Linus
+                                            Torvalds while he was a Computer Science student at the University of Helsinki in
+                                            Finland.  It has since grown to be a collobarative effort between hundreds, perhaps
+                                            thousands, people across the Internet.
+                                          </p>
+                                          <p>
+                                            In Linux you can find:
+                                            <ul>
+                                              <li>A complete multitasking operating system that uses virtual memory and shared
+                                                  libraries. It includes full TCP/IP networking support, including FTP, Telnet,
+                                                  NFS, PPP, SLIP, etc.</li>
+                                              <li>Compilers, communication programs, games, editors, etc.</li>
+                                              <li>XFree86, an implementation of the X Window System, which includes many useful
+                                                  graphical tools.</li>
+                                            </ul>
+                                          </p>
+                                        </font>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <table border="0" cellpadding="1" cellspacing="0" bgcolor="#000000" width="100%">
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                              <tr>
+                                <td bgcolor="#FFFFFF">
+                                  <table border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF" width="100%">
+                                    <tr>
+                                      <td width="100%" align="center" bgcolor="#EEEEEE">
+                                        <strong><font color="#000000">Some Linux Myths</font></strong>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <font size="-1">
+                                          With so many people unfamiliar with Linux, misconceptions about what Linux is and is
+                                          not have become widespread, to name a few:
+                                          <ul>
+                                            <li>Linux is hard to install! - Linux is extremely easy to install as a a machine's
+                                                primary operating system, and only slightly more difficult to install as a
+                                                second OS. If you have ever tried installing Win9x as a machine's second OS,
+                                                you'll find that Linux can be much easier to install- possibly because Linux
+                                                distributors count on many of their users dual booting between various OS's,
+                                                something other OS designers certainly don't count on.</li>
+                                            <li>Linux doesn't have a graphical user interface! - <a href="images/ss1.jpg">This</a>
+                                                is a screenshot of Scott Olsson's current desktop. This is certainly nothing
+                                                fancy, but it should get the point across. This machine was running X with
+                                                WindowMaker, only one of a myriad of desktop options. (if you're into that
+                                                sort of thing...)</li>
+                                            <li>Linux is too hard to use - Linux is a UNIX-like operating system. In short,
+                                                Linux is different, not difficult.  So, while it is true that you may be asked
+                                                to learn something about your computer if you choose to run Linux, you will find
+                                                that actually using Linux is very easy.  UNIX is difficult to learn, but very
+                                                easy to use. You'll be amazed how much more Linux offers!</li>
+                                            <li>Linux doesn't ever crash - well, okay, this one's true. Linux is very difficult
+                                                to crash, a feature that stems from the rigorous peer review generated by open
+                                                source development and the permissions based file systems inherited from UN*X.
+                                                Similarly, viruses are virtually unheard of on Linux systems - unlike other
+                                                available OS's, UN*X was designed from the ground up to be secure.</li>
+                                          </ul>
+                                        </font>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td valign="top">
+                <table border="0" cellpadding="0" cellspacing="3" width="250">
+                  <tr>
+                    <td>
+                      <table border="0" cellpadding="1" cellspacing="0" bgcolor="#000000" width="100%">
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                              <tr>
+                                <td bgcolor="#FFFFFF">
+                                  <table border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF" width="100%">
+                                    <tr>
+                                      <td width="100%" align="center" bgcolor="#EEEEEE">
+                                        <strong><font color="#000000">Need Help?</font></strong>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <font size="-1">
+                                          <strong>Documentation and FAQ's</strong><br>
+                                          <a href="http://metalab.unc.edu/mdw/linux.html">Linux Documentation Project</a><br>
+                                          <a href="faq/uiuc.sw.linux.html">uiuc.sw.linux faq</a><br>
+                                          <br>
+                                          <strong>Newsgroups</strong><br>
+                                          <a href="news://uiuc.sw.linux">uiuc.sw.linux</a><br>
+                                          <a href="news://comp.os.linux.answers">comp.os.linux.answers</a><br>
+                                          <a href="news://comp.os.linux.setup">comp.os.linux.setup</a>
+                                        </font>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <table border="0" cellpadding="1" cellspacing="0" bgcolor="#000000" width="100%">
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                              <tr>
+                                <td bgcolor="#FFFFFF">
+                                  <table border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF" width="100%">
+                                    <tr>
+                                      <td width="100%" align="center" bgcolor="#EEEEEE">
+                                        <strong><font color="#000000">LUG Projects</font></strong>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <font size="-1">
+                                          <p>
+                                            Slides from <a href="presentations/index.html">presentations</a> we have given.
+                                          </p>
+                                          <p>
+                                            Slides from our last <a href="install/index.html">Install Workshop</a>.
+                                          </p>
+                                          <p>
+                                            Our 1999 <a href="dash16/index.html">EOH project</a>: A device driver for the Dash-16
+                                            digital/analog convertor and data acquisition board.
+                                          </p>
+
+                                        <p>
+                                            Our 1998 <a href="broadcast/index.html">EOH project</a>: A recreation of the chooser
+                                            extension Broadcast from the Macintosh.
+                                          </p>
+                                        </font>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <table border="0" cellpadding="1" cellspacing="0" bgcolor="#000000" width="100%">
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                              <tr>
+                                <td bgcolor="#FFFFFF">
+                                  <table border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF" width="100%">
+                                    <tr>
+                                      <td width="100%" align="center" bgcolor="#EEEEEE">
+                                        <strong><font color="#000000">Members</font></strong>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <font size="-1">
+                                          <p>
+                                            Take a look at the current <a href="members.html">members</a> of the Linux Users'
+                                            Group at UIUC.
+                                          </p>
+                                        </font>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <table border="0" cellpadding="1" cellspacing="0" bgcolor="#000000" width="100%">
+                        <tr>
+                          <td>
+                            <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                              <tr>
+                                <td bgcolor="#FFFFFF">
+                                  <table border="0" cellpadding="3" cellspacing="0" bgcolor="#FFFFFF" width="100%">
+                                    <tr>
+                                      <td width="100%" align="center" bgcolor="#EEEEEE">
+                                        <strong><font color="#000000">Links</font></strong>
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <font size="-1">
+                                          <p>
+                                          <a href="http://www.freshmeat.net">Freshmeat</a><br>
+                                          <a href="http://www.linux.com">Linux.com</a><br>
+                                          <a href="http://www.linuxtoday.org">Linux Today</a><br>
+                                          <a href="http://www.slashdot.org">Slashdot</a><br>
+                                          </p>
+                                        </font>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <font size="1">
+      <p>
+        <!-- hhmts start -->
+Last modified: Tue Nov  2 16:33:33 CST 1999
+<!-- hhmts end -->
+      </p>
+      <p>
+        Copyright © 1999 <a href="mailto:lug@uiuc.edu">lug@uiuc.edu</a>
+      </p>
+    </font>
+  </body>
+<

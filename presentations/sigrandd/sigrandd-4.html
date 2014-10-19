@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Writing a Simple Signature Randomizer in C Using FIFOs: Communicating Using a Named Pipe (FIFO)</TITLE>
+ <LINK HREF="sigrandd-5.html" REL=next>
+ <LINK HREF="sigrandd-3.html" REL=previous>
+ <LINK HREF="sigrandd.html#toc4" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="sigrandd-5.html">Next</A>
+<A HREF="sigrandd-3.html">Previous</A>
+<A HREF="sigrandd.html#toc4">Contents</A>
+<HR>
+<H2><A NAME="s4">4. Communicating Using a Named Pipe (FIFO)</A></H2>
+
+<P>For the most part, you can treat FIFOs as normal files, and use
+the standard <CODE>open</CODE>, <CODE>close</CODE>, <CODE>read</CODE>,
+<CODE>write</CODE>, etc., functions on them.  You should probably
+avoid the <CODE>f*</CODE> functions (<CODE>fopen</CODE>, <CODE>fread</CODE>,
+etc.), since they perform buffering.  However, there are two
+functions where FIFO semantics are slightly different from normal:
+<CODE>open</CODE> and <CODE>write</CODE>.
+<H2><A NAME="ss4.1">4.1 <CODE>open</CODE></A>
+</H2>
+
+<P>When we <CODE>open</CODE> a FIFO, the nonblocking flag
+(<CODE>O_NONBLOCK</CODE>) affects what happens.
+<P>
+<UL>
+<LI>In the normal case (<CODE>O_NONBLOCK</CODE> not specified),
+an <CODE>open</CODE> for read-only blocks until some other
+process opens the FIFO for writing.  Similarly, an
+<CODE>open</CODE> for write-only blocks until some other
+process opens the FIFO for reading.</LI>
+<LI>If <CODE>O_NONBLOCK</CODE> is specified, an <CODE>open</CODE>
+for read-only returns immediately.  But an <CODE>open</CODE>
+for write-only returns an error with an <CODE>errno</CODE>
+of <CODE>ENXIO</CODE> if no process has the FIFO open
+for reading.</LI>
+</UL>
+<H2><A NAME="ss4.2">4.2 <CODE>write</CODE></A>
+</H2>
+
+<P>Like a pipe, if we <CODE>write</CODE> to a FIFO that no process has
+open for reading, the signal <CODE>SIGPIPE</CODE> is generated.
+When the last writer for a FIFO closes the FIFO, an end of file
+is generated for the reader of the FIFO.
+<HR>
+<A HREF="sigrandd-5.html">Next</A>
+<A HREF="sigrandd-3.html">Previous</A>
+<A HREF="sigrandd.html#toc4">Contents</A>
+</BODY>
+</HTML>

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Writing a Simple Signature Randomizer in C Using FIFOs: How to Write a Daemon</TITLE>
+ <LINK HREF="sigrandd-6.html" REL=next>
+ <LINK HREF="sigrandd-4.html" REL=previous>
+ <LINK HREF="sigrandd.html#toc5" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="sigrandd-6.html">Next</A>
+<A HREF="sigrandd-4.html">Previous</A>
+<A HREF="sigrandd.html#toc5">Contents</A>
+<HR>
+<H2><A NAME="s5">5. How to Write a Daemon</A></H2>
+
+<H2><A NAME="ss5.1">5.1 Introduction to Daemons</A>
+</H2>
+
+<P>Daemons are processes that live for a long time.  They are often
+started when the system is bootstrapped and terminate only when
+the system is shutdown.  We say they run in the background,
+because they don't have a controlling terminal.
+<H2><A NAME="ss5.2">5.2 Coding Rules</A>
+</H2>
+
+<P>
+<UL>
+<LI>The first thing to do is call <CODE>fork</CODE> and have the
+parent <CODE>exit</CODE>.  This does several things.  First,
+if the daemon was started as a simple shell command,
+having the parent terminate makes the shell think that
+the command is done.  Second, the child inherits the
+process group ID of the parent but gets a new process
+ID, so we're guaranteed that the child is not a
+process group leader.  This is a prerequisite for the
+call to <CODE>setsid</CODE> that is done next.</LI>
+<LI>Call <CODE>setsid</CODE> to create a new session.  The
+process becomes a session leader of a new session,
+becomes the process group leader of a new process group,
+and has no controlling terminal.</LI>
+<LI>Change the current working directory to the root
+directory.  The current working directory inherited from
+the parent could be on a mounted filesystem.  Since
+daemons normally exist until the system is rebooted, if
+the daemon stays on a mounted filesystem, that
+filesystem cannot be unmounted.
+                    
+Alternately, some daemons might change the current
+working directory to some specific location, where they
+will do all their work.</LI>
+<LI>Set the file mode creation mask to 0.  The file mode
+creation mask that's inherited could be set to deny
+certain permissions. </LI>
+<LI>Unneeded file descriptors should be closed.</LI>
+</UL>
+<H2><A NAME="ss5.3">5.3 Simple Daemon Creation Example</A>
+</H2>
+
+<P>The following function can be used from a program that wants to
+initialize itself as a daemon.
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+#include &lt;sys/types.h>
+#include &lt;sys/stat.h>
+#include &lt;fcntl.h>
+
+int daemon_init(void)
+{
+  pid_t pid;
+
+  if ((pid = fork()) &lt; 0) {
+    return -1;
+  } else if (pid != 0) {
+    exit(0);  /* parent goes bye-bye */
+  }
+
+  /* child continues */
+  setsid();   /* become session leader */
+  chdir("/"); /* change working directory */
+  umask(0);   /* clear our file mode creation mask */
+
+  return 0;
+}
+          
+</PRE>
+</CODE></BLOCKQUOTE>
+<H2><A NAME="ss5.4">5.4 Error Logging</A>
+</H2>
+
+<P>When writing a daemon, you can't just write error messages to
+standard error, since it shouldn't have a control terminal.
+Instead, you should use the central error logging facility
+<CODE>syslog</CODE>.  The interface to <CODE>syslog</CODE> is as
+following:
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+#include &lt;syslog.h>
+
+void openlog(char* ident, int option, int facility);
+
+void syslog(int priority, char* format, ...);
+
+void closelog(void);
+          
+</PRE>
+</CODE></BLOCKQUOTE>
+<H3><CODE>openlog / closelog</CODE></H3>
+
+<P>Calling <CODE>openlog</CODE> is optional.  If it's not called, the
+first time <CODE>syslog</CODE> is called, <CODE>openlog</CODE> is
+called automatically.  Calling <CODE>closelog</CODE> is also
+optional -- it just closes the descriptor that was being used
+to communicate with the <CODE>syslogd</CODE> daemon.a
+<P>Calling <CODE>openlog</CODE> lets us specify an <CODE>ident</CODE>
+that is added to each log message.  This is normally the name
+of the program (e.g., <CODE>cron</CODE>, <CODE>inetd</CODE>, etc.)
+<CODE>option</CODE> specifies a number of logging options, such as
+whether or not to log the process ID with each message.
+<CODE>facility</CODE> allows the configuration file for
+<CODE>syslogd</CODE> handle different types of messages
+differently.  <CODE>facility</CODE> can still be specified as part
+of the <CODE>priority</CODE> argument to <CODE>syslog</CODE>, using
+bitwise OR.
+<H3><CODE>syslog</CODE></H3>
+
+<P>We call <CODE>syslog</CODE> to generate a log message.
+<CODE>priority</CODE> is a combination of the <CODE>facility</CODE>
+referred to earlier and a <CODE>level</CODE>, which specifies the
+priority of the message.  Valid <CODE>levels</CODE>, from highest
+to lowest priority, are <CODE>LOG_EMERG</CODE>,
+<CODE>LOG_ALERT</CODE>, <CODE>LOG_CRIT</CODE>, <CODE>LOG_ERR</CODE>,
+<CODE>LOG_WARNING</CODE>, <CODE>LOG_NOTICE</CODE>, <CODE>LOG_INFO</CODE>,
+and <CODE>LOG_DEBUG</CODE>.
+<P><CODE>format</CODE> is passed to the <CODE>vsprintf</CODE> function
+for formatting.  Any occurrence of the two characters
+<CODE>%m</CODE> in <CODE>format</CODE> are first replaced with the
+error message string (<CODE>strerror</CODE>) corresponding to
+the value of <CODE>errno</CODE>.
+<P>A simple example for using syslog from a hypothetical
+PostScript printer daemon is:
+<H3>Error Logging Example:</H3>
+
+<P>
+<BLOCKQUOTE><CODE>
+<PRE>
+openlog("lprps", LOG_PID, LOG_LPR);
+syslog(LOG_ERR, "open error for %s: %m", filename);
+            
+</PRE>
+</CODE></BLOCKQUOTE>
+<HR>
+<A HREF="sigrandd-6.html">Next</A>
+<A HREF="sigrandd-4.html">Previous</A>
+<A HREF="sigrandd.html#toc5">Contents</A>
+</BODY>
+</HTML>

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="SGML-Tools 1.0.9">
+ <TITLE>Writing a Simple Signature Randomizer in C Using FIFOs: Introduction</TITLE>
+ <LINK HREF="sigrandd-2.html" REL=next>
+
+ <LINK HREF="sigrandd.html#toc1" REL=contents>
+</HEAD>
+<BODY>
+<A HREF="sigrandd-2.html">Next</A>
+Previous
+<A HREF="sigrandd.html#toc1">Contents</A>
+<HR>
+<H2><A NAME="s1">1. Introduction</A></H2>
+
+<P>NOTE: Many examples and explanations in this article were taken
+from <CODE>Advanced Programming in the Unix Environment</CODE> by W.
+Richard Stevens, (c) 1992.
+<H2><A NAME="ss1.1">1.1 Named Pipes (FIFOs)</A>
+</H2>
+
+<P>FIFOs, sometimes called named pipes, are an UNIX interprocess
+communication mechanism that is a standard part of POSIX.1.
+While standard pipes can only be used between related
+processes when a common ancestor has created the pipe, FIFOs
+allow unrelated processes to exchange data.  A FIFO is
+actually a type of file, and the standard file I/O functions
+(<CODE>open</CODE>, <CODE>close</CODE>, <CODE>read</CODE>, <CODE>write</CODE>,
+<CODE>unlink</CODE>, etc.) all work with FIFOs.
+<P>As you will see, using a FIFO for your <CODE>.signature</CODE> file
+instantly allows every application access to a randomly created
+<CODE>.signature</CODE>, without requiring modifications to the
+individual applications.  To them, your <CODE>.signature</CODE> file
+looks and acts just like a regular text file.
+<H2><A NAME="ss1.2">1.2 Basic Strategy for Writing a Signature Randomizer</A>
+</H2>
+
+<P>Since FIFOs look and act just like regular files, we can
+create a randomized <CODE>.signature</CODE> by simply making
+<CODE>.signature</CODE> into a FIFO and having a process deliver
+data to it upon request.  To do this, we can write a daemon that
+will live "forever" and constantly tries to send a new, random
+signature to the FIFO.
+<HR>
+<A HREF="sigrandd-2.html">Next</A>
+Previous
+<A HREF="sigrandd.html#toc1">Contents</A>
+</BODY>
+</HTML>

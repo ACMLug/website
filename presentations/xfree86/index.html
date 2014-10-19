@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.06 [en] (X11; I; Linux 2.0.36 i586) [Netscape]">
+</HEAD>
+<BODY>
+
+<UL>
+<LI>
+Definition of <B>GUI</B>, <B>X window, XFree86 </B>&amp; <B>Window Managers</B></LI>
+
+<UL>
+<LI>
+WM info at&nbsp; <A HREF="http://www.plig.org/xwinman/">http://www.plig.org/xwinman/</A>
+.</LI>
+</UL>
+
+<LI>
+Video Card Probing</LI>
+
+<UL>
+<LI>
+Problems and reasons for failure (<B>ISA</B>, <B>AGP</B>, unsupported,
+etc)</LI>
+
+<LI>
+<B>Chipset</B> vs. model</LI>
+</UL>
+
+<LI>
+Custom Monitor Setup</LI>
+
+<UL>
+<LI>
+<B>Terms:</B></LI>
+
+<UL>
+<LI>
+<B>Refresh rate</B> - how many times per second (Hz) your monitor writes
+the image. &lt;72Hz hurts.</LI>
+
+<LI>
+<B>Resolution </B>- The size of your display, measured in pixels (width
+x hieght)</LI>
+</UL>
+
+<LI>
+Choosing the generic monitor closest to yours</LI>
+
+<UL>
+<LI>
+If you have your monitor's manual, choose the highest resolution it can
+handle from the list</LI>
+
+<LI>
+If you don't have your montitor manual, visit&nbsp; <A HREF="http://www.netmaster.ca/fvlug/monitor/">http://www.netmaster.ca/fvlug/monitor/</A></LI>
+
+<LI>
+If it is not listed there, base decision on your windows resolution @ 72Hz
+if you know it.</LI>
+
+<LI>
+If not, choose 1024x768 @ 60Hz (All monitors should support at least 800x600
+@ 72hz)</LI>
+</UL>
+
+<LI>
+Choosing the Vertical refresh frequency range of your monitor.</LI>
+
+<UL>
+<LI>
+If you have a manual, choose the highest range that is less than your monitor's</LI>
+
+<LI>
+If you don't have you manual, visit&nbsp; <A HREF="http://www.netmaster.ca/fvlug/monitor/">http://www.netmaster.ca/fvlug/monitor/</A></LI>
+
+<LI>
+If your monitor is not listed there, choose 50-90</LI>
+</UL>
+
+<LI>
+Choosing your desired resolution</LI>
+
+<UL>
+<LI>
+If you don't like what RedHat autoprobes, don't worry, we'll fix it later</LI>
+</UL>
+
+<LI>
+Finish install &amp; reboot.</LI>
+</UL>
+
+<LI>
+What to do if something goes wrong or if you are not happy</LI>
+
+<UL>
+<LI>
+Video chipset probe failure</LI>
+
+<UL>
+<LI>
+Unsupported: <A HREF="http://www.suse.de/XSuSE/XSuSE_E.html">http://www.suse.de/XSuSE/XSuSE_E.html</A>,&nbsp;
+<A HREF="ftp://ftp.redhat.com/pub/XFCom/">ftp://ftp.redhat.com/pub/XFCom/</A>
+(laptops, neomagic), and&nbsp; <A HREF="ftp://ftp.redhat.com/pub/XBF/">ftp://ftp.redhat.com/pub/XBF/</A>
+(i740)</LI>
+
+<LI>
+S3V AGP&nbsp;should use the SVGA server (probe is wrong). Must specify
+s3_virge in the Chipset line.</LI>
+</UL>
+
+<LI>
+Playing with<B> /etc/X11/XF86Config</B></LI>
+
+<UL>
+<LI>
+Overview</LI>
+
+<UL>
+<LI>
+Pointer Section</LI>
+
+<LI>
+Monitor section</LI>
+
+<UL>
+<LI>
+Modelines</LI>
+</UL>
+
+<LI>
+Device Section</LI>
+
+<LI>
+Screen Section</LI>
+</UL>
+
+<LI>
+Resolution/Refresh problems</LI>
+
+<UL>
+<LI>
+Entering the exact values for HorizSync and VertRefresh</LI>
+
+<LI>
+Pick the modes you like and put them in the Screen section. Modeline names
+may be altered.</LI>
+</UL>
+
+<LI>
+Display qwirks</LI>
+
+<UL>
+<LI>
+For higher refresh rates, raise the dotclock of your modeline. Xfree throws
+out modelines with dotclocks too high for your Vsynch and Hsynch ranges.</LI>
+
+<LI>
+xvidtune can be used to adjust your display position &amp; size. (So you
+don't have to change your monitor's settings)</LI>
+</UL>
+
+<LI>
+<B>Virtual Resolution - </B>Godsend or annoyance?</LI>
+</UL>
+
+<LI>
+Common Errors</LI>
+
+<UL>
+<LI>
+Completly garbled or "screaming" screen.</LI>
+
+<UL>
+<LI>
+Selected Resolution too high</LI>
+
+<LI>
+Refresh rate too high (lower Vsync and/or Hsync)</LI>
+</UL>
+
+<LI>
+Extremely large display (320x200)</LI>
+
+<UL>
+<LI>
+SVGA server is being used, but no chipset has been specified.</LI>
+</UL>
+
+<LI>
+Color is bad in programs.</LI>
+
+<UL>
+<LI>
+Make sure you have a Depth directive in the proper Screen section.</LI>
+
+<LI>
+Make sure you have enough video ram for your setup (resolution x depth
+/ 8)</LI>
+
+<LI>
+As a last resort, try <B>startx -- -bpp 16</B></LI>
+</UL>
+</UL>
+</UL>
+
+<LI>
+Finishing up</LI>
+
+<UL>
+<LI>
+To start X, type<B> startx </B>from your prompt.</LI>
+
+<UL>
+<LI>
+Sheild thy eyes, for fvwm95 is hellspawn</LI>
+</UL>
+</UL>
+</UL>
+
+</BODY>
+</HTML>
