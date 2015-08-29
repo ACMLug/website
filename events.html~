@@ -16,15 +16,17 @@
 				<li id="notactive"><a href="projects.html" id="notcurrent">Projects</a></li>
 				<li id="notactive"><a href="meetings.html" id="notcurrent">Meetings</a></li>
 				<li id="notactive"><a href="conventions.html" id="notcurrent">Conventions</a></li>
-				<li id="active"><a href="events.html" id="notcurrent">Events</a></li>
-				<li id="notactive"><a href="opportunities.html" id="current">Opportunities</a></li>
-				<li id="notactive"><a href="materials.html" id="notcurrent">Materials</a></li>	 
+				<li id="active"><a href="events.html" id="current">Events</a></li>
+				<li id="notactive"><a href="opportunities.html" id="notcurrent">Opportunities</a></li> 
 			</ul>
 		</div>
 		<div id="content">
-			<p>Be sure to check here for any updates regarding jobs, internships, or awesome projects.</p>
-			<p><a href="http://www.fsf.org/volunteer/internships/">The Free Software Foundation is looking for interns!</a></p>
-		<p><i>Last upated on April 14, 2015</i></p>
+			<p>Every so often GLUG will bring in speakers or host events.
+                        <p><b>March 16, 2015</b> <a href="https://www.fsf.org/events/rms-20150316-champaign-urbana">Richard Stallman</a> [<a href="pictures/RMS-talk.pdf">pdf</a>, <a href="http://stallman.gnulug.org">video</a>]</p>
+			<img src="pictures/RMS-talk.png" alt="RMS Talk Flyer" height="600" width="500">
+			<img src="pictures/gnulug-rms-audience.jpg" alt="RMS Audience" width="50%">
+			<p>[Richard Stallman Event 2015]</p>
+		<p><i>Last upated on March 8, 2015</i></p>
 
 		</div>
 	</div></body>

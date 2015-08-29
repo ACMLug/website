@@ -22,12 +22,19 @@
 			</ul>
 		</div>
 		<div id="content">
-			<p>The GNU/Linux Users Group (GLUG) at <a href="https://www-s.acm.illinois.edu/">ACM@UIUC</a> is always looking for new ways to challenge
-			it's members with projects and presentations.</p>
-			<p>Our current projects are focused on mimicking an actual enterprise environment using a <a href="http://www.xenproject.org/">Xen Hypervisor.</a></p>
-			<p>If you are interested in learning more about what we are up to, or want to see a list of our current virtual machines <a href="https://github.com/ACMLug/">check out our Git repos.</a></p>
+			<p>Below are the links to the slides, videos, and a supplemental document from our first ever<br> <strong> Linux Basics Bootcamp</strong><br></p>
+			<ul>
+				<li><a href="LinuxBasicsBootcamp.pptx">Bootcamp Slides</a></li>
+				<li><a href="bootcamp_video.mp4">Bootcamp Video</a></li>
+				<li><a href="supplement.pdf">Study sheet</a></li>
+			</ul>
+			<p>The event took place in the Digital Computer Lab at UIUC August 27 and 28.<br>Presenters were GLUG members Shane Rogers, Devin Akman, and Simon Kim,
+			   and GLUG chair Wayland Morgan.</p>
+			<p>Thanks to everyone who came out to the event, the turnout was amazing. Also thanks for paying attention and asking questions! If you have any feed back or suggestions for next time, please don't hesitate to message us at contact[at]gnulug[dot]org!<br><br>
+A special thanks to Seoung Kyun Kim, Devin Akman, Eric Huber and Will Song, without whom this would not have been nearly as much fun.
+And of course, thanks to Cinda Heeren for making it happen!</p>
 
-		<p><i>Last upated on March 8, 2014</i></p>
+		<p><i>Last upated on August 29, 2015</i></p>
 
 		</div>
 	</div></body>
