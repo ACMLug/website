@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>GNU/Linux User Group at ACM</title>
+		<link rel="stylesheet" href="lug09.css" title="LUG09" />
+	</head>
+	<body><div id="container">
+
+		<img id="logo" src="Gnulinux.png" alt="gnutux" width="200" height="200" />
+		<h1>GNU/Linux Users Group</h1>
+		<h2>Association for Computing Machinery @ University of Illinois at Urbana-Champaign</h2>
+		<div id="navcontainer">
+			<ul id="navlist">
+				<li id="notactive"><a href="index.html" id="notcurrent">About</a></li>
+				<li id="active"><a href="projects.html" id="current">Projects</a></li>
+				<li id="notactive"><a href="meetings.html" id="notcurrent">Meetings</a></li>
+				<li id="notactive"><a href="conventions.html" id="notcurrent">Conventions</a></li>
+				<li id="notactive"><a href="events.html" id="notcurrent">Events</a></li>
+				<li id="notactive"><a href="opportunities.html" id="notcurrent">Opportunities</a></li>
+				<li id="notactive"><a href="materials.html" id="notcurrent">Materials</a></li>	
+			</ul>
+		</div>
+		<div id="content">
+			<p>Below are the links to the slides, videos, and a supplemental document from our first ever<br> <strong> Linux Basics Bootcamp</strong><br></p>
+			<ul>
+				<li><a href="LinuxBasicsBootcamp.pptx">Bootcamp Slides</a></li>
+				<li><a href="bootcamp_video.mpg">Bootcamp Video</a></li>
+				<li><a href="LinuxIntroduction.pdf">Study sheet</a></li>
+			</ul>
+			<p>The event took place in the Digital Computer Lab at UIUC August 27 and 28.<br>Presenters were GLUG members Shane Rogers, Devin Akman, and Simon Kim,
+			   and GLUG chair Wayland Morgan.</p>
+			<p>Thanks to everyone who came out to the event, the turnout was amazing. Also thanks for paying attention and asking questions! If you have any feed back or suggestions for next time, please don't hesitate to message us at contact[at]gnulug[dot]org!<br><br>
+A special thanks to Seoung Kyun Kim, Devin Akman, Eric Huber and Will Song, without whom this would not have been nearly as much fun.
+And of course, thanks to Cinda Heeren for making it happen!</p>
+
+		<p><i>Last upated on August 29, 2015</i></p>
+
+		</div>
+	</div></body>
+</html>
